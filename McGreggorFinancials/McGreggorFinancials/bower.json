@@ -1,0 +1,17 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "v4.4.1",
+    "datatables": "DataTables#1.10.19",
+    "bootstrap-datepicker": "v1.9.0",
+    "jquery.scrollbar": "0.2.11",
+    "jquery-validation": "1.16.0",
+    "jquery-validation-unobtrusive": "v3.2.11",
+    "material-design-iconic-font": "2.2.0",
+    "popper.js": "v1.16.0"
+  },
+  "resolutions": {
+    "bootstrap-datepicker": "v1.9.0"
+  }
+}

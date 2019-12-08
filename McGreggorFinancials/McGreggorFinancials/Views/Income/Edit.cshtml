@@ -1,0 +1,49 @@
+﻿@model IncomeFormViewModel
+
+@{
+    ViewData["Title"] = ViewBag.FormTitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>@ViewBag.FormTitle</h1>
+</header>
+<hr />
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Income.ID" />
+    <div class="form-group">
+        <span asp-validation-for="Income.CategoryID" class="text-danger"></span>
+        <label asp-for="Income.CategoryID" class="control-label"></label>
+        <select asp-for="Income.CategoryID" asp-items="Model.IncomeCategories" class="form-control">
+            <option>Please select a category</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Income.Description" class="control-label"></label>
+        <textarea asp-for="Income.Description" class="form-control"></textarea>
+        <span asp-validation-for="Income.Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Income.Amount" class="control-label"></label>
+        <input asp-for="Income.Amount" class="form-control" />
+        <span asp-validation-for="Income.Amount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Income.Date" class="control-label"></label>
+        <input asp-for="Income.Date" type="text" class="form-control datepicker" />
+        <span asp-validation-for="Income.Date" class="text-danger"></span>
+    </div>
+    <div class="text-center">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="MonthlyReport" class="btn btn-default">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $('.datepicker').datepicker();
+    </script>
+}

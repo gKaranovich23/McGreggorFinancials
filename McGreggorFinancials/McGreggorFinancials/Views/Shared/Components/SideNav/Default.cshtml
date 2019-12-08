@@ -1,0 +1,28 @@
+﻿@model SideNavViewModel
+
+<ul class="navigation">
+    @foreach(var module in Model.Modules)
+    {
+        if(module.Links.Count == 0)
+        {
+            <li class="@(Model.CurrentController.Equals(module.Controller) && Model.CurrentAction.Equals(module.Action) ? "navigation__active" : "")">
+                <a asp-controller="@module.Controller" asp-action="@module.Action"><i class="@module.CssClasses"></i>@module.Name</a>
+            </li>
+        }
+        else
+        {
+            <li class="navigation__sub @(Model.CurrentController.Equals(module.Controller) ? "navigation__sub--active navigation__sub--toggled" : "")">
+                <a href=""><i class="module.CssClasses"></i> @module.Name</a>
+
+                <ul>
+                    @foreach(var link in module.Links)
+                    {
+                        <li class="@(Model.CurrentAction.Equals(link.Action) && Model.CurrentController.Equals(module.Controller) ? "nvagiation__active" : "")">
+                            <a asp-controller="@module.Controller" asp-action="@link.Action">@link.Name</a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    }
+</ul>

@@ -1,0 +1,167 @@
+﻿@model IncomeListViewModel
+
+@{
+    ViewData["Title"] = "MonthlyReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <header class="content__title">
+        <form asp-action="MonthlyReport" method="post">
+            <h1>Income: <input id="dateStr" type="text" name="dateStr" class="datepicker" value="@Model.Date.ToString("MMMM yyyy")" /></h1>
+            <button typeof="submit" hidden>Submit</button>
+        </form>
+    </header>
+
+
+<a asp-action="Create" class="btn btn-primary btn-add--expense">Add Income</a>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">Monthly Income</h4>
+                <div id="exLine_chart">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">% By Category</h4>
+                <h6 class="card-subtitle"></h6>
+                <div id="exCat_chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-left">ID</th>
+                        <th>Description</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Incomes)
+                    {
+                        <tr>
+                            <td class="text-left">@e.ID</td>
+                            <td>@e.Description</td>
+                            <td class="text-center">$@e.Amount</td>
+                            <td class="text-center">@e.Date.ToString("MM/dd/yyyy")</td>
+                            <td class="text-center">
+                                <form asp-action="Delete" method="post">
+                                    <a asp-action="Edit"
+                                       asp-route-incomeId="@e.ID">
+                                        Edit
+                                    </a>
+                                    |
+                                    <input type="hidden" name="incomeId" value="@e.ID" />
+                                    <button typeof="submit" class="btn-delete--expense">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+            @section Scripts {
+                <script type="text/javascript">
+        $('.datepicker').datepicker({
+            format: "MM yyyy",
+            startView: "months",
+            minViewMode: "months",
+        });
+
+        $('.datepicker').datepicker().on('changeDate', function (ev) {
+            $(this).parent().siblings('button')[0].click();
+        });
+
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawLineChart);
+        google.charts.setOnLoadCallback(drawPieChart);
+
+        function drawLineChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.LineChartData));
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Day');
+            data.addColumn('number', 'Income');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].xData, Number(modelData[i].yData)]
+                ]);
+            }
+
+            // Set chart options
+            var options = {
+                backgroundColor: 'transparent',
+                hAxis: {
+                    title: 'Day',
+                    titleColor: '#fff',
+                    gridlines: { color: '#808080' },
+                    baselineColor: '#fff',
+                    textStyle: {color: '#fff'}
+                },
+                vAxis: {
+                    title: 'Income Total',
+                    titleColor: '#fff',
+                    gridlines: { color: '#808080' },
+                    minorGridlines: {color: '#808080'},
+                    baselineColor: '#808080',
+                    textStyle: {color: '#fff'}
+                },
+                legend: {
+                    textStyle: {color: '#fff'}
+                }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('exLine_chart'));
+            chart.draw(data, options);
+        }
+
+        function drawPieChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.PieChartData));
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Income Categories');
+            data.addColumn('number', '% of Income');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].category, Number(modelData[i].data)]
+                ]);
+            }
+
+            // Set chart options
+            var options = {
+                backgroundColor:'transparent',
+                legend: {
+                    textStyle: {color: '#fff'}
+                }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('exCat_chart'));
+            chart.draw(data, options);
+        }
+
+        $(window).resize(function () {
+            drawPieChart();
+            drawLineChart();
+        });
+                </script>
+            }

@@ -1,0 +1,113 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+for details on configuring this project to bundle and minify static web assets. */
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Carousel */
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* Make .svg files in the carousel display properly in older browsers */
+.carousel-inner .item img[src$=".svg"] {
+    width: 100%;
+}
+
+/* QR code generator */
+#qrCode {
+    margin: 15px;
+}
+
+input[type='date'].form-control, input[type='time'].form-control, input[type='datetime-local'].form-control, input[type='month'].form-control {
+    line-height: normal !important;
+}
+
+.datepicker:hover {
+    cursor: pointer;
+}
+
+.btn-delete--expense {
+    color: #a4d0ff;
+    border: none;
+    background-color: transparent;
+    padding: 0px;
+}
+
+#dateStr {
+    border: none;
+    padding: 0;
+}
+
+.dataTables_empty {
+    text-align: center;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}
+
+@media (min-width:550px) {
+    .btn-add--expense {
+        float: right;
+        margin-top: -40px;
+    }
+}
+
+@media (max-width: 549px) {
+    .btn-add--expense {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (min-width: 420px) {
+    .dataTables_length {
+        float: right;
+        margin-top: 5px;
+    }
+}
+
+#totalToGoal {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.text-success {
+    color: #31c81f;
+}
+
+#dateStr {
+    background-color: transparent;
+    color: #fff;
+}
+
+.chart {
+    width: 100% !important;
+}
+
+#btns_stock {
+    float: right;
+    margin-top: -40px;
+}
+
+.card-body {
+    min-height: 300px !important;
+}
+
+.table{
+    color: #fff !important;
+}
