@@ -1,4 +1,5 @@
 ﻿using McGreggorFinancials.Models.Accounts;
+using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
 using McGreggorFinancials.Models.Targets;
 using Microsoft.AspNetCore.Builder;
@@ -110,6 +111,73 @@ namespace McGreggorFinancials.Models.Data
                             CategoryID = context.IncomeCategories.Where(i => i.Name.Equals("Gift")).First().ID
                         }
                     );
+
+                context.SaveChanges();
+            }
+
+            if (!context.ExpenseCategories.Any())
+            {
+                context.ExpenseCategories.AddRange(
+                        new ExpenseCategory { Name = "Rent" },
+                        new ExpenseCategory { Name = "Groceries" },
+                        new ExpenseCategory { Name = "Phone" },
+                        new ExpenseCategory { Name = "Gas" },
+                        new ExpenseCategory { Name = "Electricity" },
+                        new ExpenseCategory { Name = "Health/Fitness" }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if (!context.PaymentMethods.Any())
+            {
+                context.PaymentMethods.AddRange(
+                        new PaymentMethod { Method = "Cash", IsCredit = false },
+                        new PaymentMethod { Method = "Discover Card", IsCredit = true },
+                        new PaymentMethod { Method = "Visa Card", IsCredit = true }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if (!context.CreditBalance.Any())
+            {
+                context.CreditBalance.AddRange(
+                        new CreditBalance { Amount = 0.00, PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).FirstOrDefault().ID },
+                        new CreditBalance { Amount = 0.00, PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Visa Card")).FirstOrDefault().ID }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if (!context.Expenses.Any())
+            {
+                context.Expenses.AddRange(
+                    new Expense
+                    {
+                        Description = "Rent",
+                        Amount = 704,
+                        Date = DateTime.Now,
+                        ExpenseCategoryID = context.ExpenseCategories.Where(c => c.Name == "Rent").First().ID,
+                        PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).First().ID
+                    },
+                    new Expense
+                    {
+                        Description = "Groceries",
+                        Amount = 100,
+                        Date = DateTime.Now,
+                        ExpenseCategoryID = context.ExpenseCategories.Where(c => c.Name == "Groceries").First().ID,
+                        PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).First().ID
+                    },
+                    new Expense
+                    {
+                        Description = "Gym",
+                        Amount = 40,
+                        Date = DateTime.Now,
+                        ExpenseCategoryID = context.ExpenseCategories.Where(c => c.Name == "Health/Fitness").First().ID,
+                        PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).First().ID
+                    }
+                );
 
                 context.SaveChanges();
             }

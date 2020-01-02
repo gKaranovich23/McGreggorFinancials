@@ -1,0 +1,40 @@
+﻿@model TargetFormViewModel
+
+@{
+    ViewData["Title"] = "EditTarget";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>@ViewBag.FormTitle</h1>
+</header>
+<hr />
+<form asp-action="EditTarget">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Target.ID" />
+    <div class="form-group">
+        <span asp-validation-for="Target.TargetType" class="text-danger"></span>
+        <label asp-for="Target.TypeID" class="control-label"></label>
+        <select asp-for="Target.TypeID" asp-items="Model.TargetTypes" class="form-control">
+            <option>Please select a type</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Target.Amount" class="control-label"></label>
+        <input asp-for="Target.Amount" class="form-control" />
+        <span asp-validation-for="Target.Amount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Target.Percentage" class="control-label"></label>
+        <input asp-for="Target.Percentage" class="form-control" />
+        <span asp-validation-for="Target.Percentage" class="text-danger"></span>
+    </div>
+    <div class="text-center">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="Goals" class="btn btn-default">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

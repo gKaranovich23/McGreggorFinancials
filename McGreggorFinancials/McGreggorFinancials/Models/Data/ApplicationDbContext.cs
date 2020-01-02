@@ -1,4 +1,5 @@
 ﻿using McGreggorFinancials.Models.Accounts;
+using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
 using McGreggorFinancials.Models.Targets;
 using Microsoft.EntityFrameworkCore;
@@ -25,5 +26,13 @@ namespace McGreggorFinancials.Models.Data
         public DbSet<TargetType> TargetTypes { get; set; }
 
         public DbSet<TargetAmount> TargetAmounts { get; set; }
+
+        public DbSet<Expense> Expenses { get; set; }
+
+        public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
+
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+
+        public DbSet<CreditBalance> CreditBalance { get; set; }
     }
 }
