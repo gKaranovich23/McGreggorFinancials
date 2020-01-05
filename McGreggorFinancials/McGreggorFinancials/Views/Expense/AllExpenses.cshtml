@@ -1,0 +1,52 @@
+﻿@model ExpenseListViewModel
+
+@{
+    ViewData["Title"] = "AllExpenses";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>All Expenses</h1>
+</header>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-left">ID</th>
+                        <th>Description</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Expenses)
+                    {
+                        <tr>
+                            <td class="text-left">@e.ID</td>
+                            <td>@e.Description</td>
+                            <td class="text-center">$@e.Amount</td>
+                            <td class="text-center">@e.Date.ToString("MM/dd/yyyy")</td>
+                            <td class="text-center">
+                                <form asp-action="Delete" method="post">
+                                    <a asp-action="Edit"
+                                       asp-route-expenseId="@e.ID">
+                                        Edit
+                                    </a>
+                                    |
+                                    <input type="hidden" name="expenseId" value="@e.ID" />
+                                    <button typeof="submit" class="btn-delete--expense">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

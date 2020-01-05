@@ -1,0 +1,48 @@
+﻿@model IEnumerable<PaymentMethod>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Method)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreditBalance)
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Method)
+                </td>
+                <td>
+                    @if (item.IsCredit)
+                    {
+                        <span>$</span>@Html.DisplayFor(modelItem => item.CreditBalance.Amount)
+                    }
+                    else
+                    {
+                        <span>N/A</span>
+                    }
+                </td>
+                <td>
+                    <a asp-controller="Credit"
+                       asp-action="PayOffCredit"
+                       asp-route-id="@item.ID">
+                        PayOff
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

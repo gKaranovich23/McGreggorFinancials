@@ -1,0 +1,30 @@
+﻿@model List<PieChartData>
+
+<div id="exCat_chart"></div>
+
+<script type="text/javascript">
+    function drawExpenseCatChart() {
+        var modelData = @Html.Raw(Json.Serialize(Model));
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'ExpenseCategory');
+        data.addColumn('number', '% of Expenses');
+
+        for (var i = 0; i < $(modelData).length; i++) {
+            data.addRows([
+                [modelData[i].category, Number(modelData[i].data)]
+            ]);
+        }
+
+        // Set chart options
+        var options = {
+            backgroundColor: 'transparent',
+            legend: {
+                textStyle: {color: '#fff'}
+            }
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('exCat_chart'));
+        chart.draw(data, options);
+    }
+</script>

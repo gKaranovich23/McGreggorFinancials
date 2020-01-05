@@ -1,0 +1,62 @@
+﻿@model IEnumerable<PaymentMethod>
+
+@{
+    ViewData["Title"] = "CreditCards";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>Credit Cards</h1>
+</header>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ID)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Method)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CreditBalance)
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Method)
+                            </td>
+                            <td>
+                                @if (item.IsCredit)
+                                {
+                                    <span>$</span>@Html.DisplayFor(modelItem => item.CreditBalance.Amount)
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="PayOffCredit"
+                                   asp-route-id="@item.ID">
+                                    PayOff
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -14,7 +14,9 @@ namespace McGreggorFinancials.ViewModels.ViewComponents
             {
                 new HomeModule(),
                 new AdminModule(),
-                new IncomeModule()
+                new IncomeModule(),
+                new ExpenseModule(),
+                new CreditModule()
             };
         }
 

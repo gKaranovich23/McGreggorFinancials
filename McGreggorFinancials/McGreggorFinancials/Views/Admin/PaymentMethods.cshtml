@@ -1,0 +1,75 @@
+﻿@model IEnumerable<PaymentMethod>
+
+@{
+    ViewData["Title"] = "PaymentMethods";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>Payment Methods</h1>
+</header>
+
+<a asp-action="CreatePaymentMethod" class="btn btn-primary btn-add--expense">Add Method</a>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ID)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Method)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IsCredit)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CreditBalance)
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Method)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IsCredit)
+                            </td>
+                            <td>
+                                @if (item.IsCredit)
+                                {
+                                    <span>$</span>@Html.DisplayFor(modelItem => item.CreditBalance.Amount)
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="EditPaymentMethod"
+                                   asp-route-id="@item.ID">
+                                    Edit
+                                </a>
+                                |
+                                <a asp-action="PayOffCredit"
+                                   asp-route-id="@item.ID">
+                                    PayOff
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

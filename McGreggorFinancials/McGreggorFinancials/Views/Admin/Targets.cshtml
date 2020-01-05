@@ -1,0 +1,63 @@
+﻿@model IEnumerable<TargetAmount>
+
+    @{
+        ViewData["Title"] = "Targets";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <header class="content__title">
+        <h1>Goals</h1>
+    </header>
+
+    <a asp-action="CreateTarget" class="btn btn-primary btn-add--expense">Add Target</a>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.ID)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Amount)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Percentage)
+                            </th>
+                            <th>
+                                Goal Type
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Amount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Percentage)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TargetType.Name)
+                                </td>
+                                <td>
+                                    <a asp-action="EditTarget"
+                                       asp-route-id="@item.ID">
+                                        Edit
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

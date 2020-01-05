@@ -1,0 +1,30 @@
+﻿@model PayOffCreditViewModel
+
+@{
+    ViewData["Title"] = "PayOffCredit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>@ViewBag.FormTitle</h1>
+</header>
+
+<h4>Current Balance: $ @Html.DisplayFor(modelItem => modelItem.PaymentMethod.CreditBalance.Amount)</h4>
+<hr />
+<form asp-action="PayOffCredit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="PaymentMethod.ID" />
+    <div class="form-group">
+        <label asp-for="AmountToPay" class="control-label"></label>
+        <input asp-for="AmountToPay" class="form-control"></i>
+        <span asp-validation-for="AmountToPay" class="text-danger"></span>
+    </div>
+    <div class="text-center">
+        <input type="submit" value="Pay" class="btn btn-primary" />
+        <a asp-action="PaymentMethods" class="btn btn-default">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

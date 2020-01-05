@@ -17,7 +17,7 @@ namespace McGreggorFinancials.Models.Expenses.Repositories
         }
 
         public IQueryable<Expense> Expenses => context.Expenses.Include(e => e.ExpenseCategory)
-            .Include(x => x.PaymentMethod).Include(x => x.Receipt);
+            .Include(x => x.PaymentMethod);
 
         public int Save(Expense e)
         {
