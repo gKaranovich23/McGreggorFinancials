@@ -2,6 +2,7 @@
 using McGreggorFinancials.Models.Donations;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
+using McGreggorFinancials.Models.Stocks;
 using McGreggorFinancials.Models.Targets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -211,6 +212,47 @@ namespace McGreggorFinancials.Models.Data
                             Date = DateTime.Now,
                             CharityID = context.Charities.Where(i => i.Name.Equals("Humane Society")).First().ID,
                             PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).First().ID
+                        }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if (!context.Sectors.Any())
+            {
+                context.Sectors.AddRange(
+                        new Sector { Name = "Tech" },
+                        new Sector { Name = "ETF" }
+                    );
+                context.SaveChanges();
+            }
+
+            if (!context.Stocks.Any())
+            {
+                context.Stocks.AddRange(
+                        new Stock { Company = "Micron Technology", Ticker = "MU", SectorID = context.Sectors.Where(x => x.Name.Equals("Tech")).First().ID },
+                        new Stock { Company = "Aquirer's Multiple ETF", Ticker = "ZIG", SectorID = context.Sectors.Where(x => x.Name.Equals("ETF")).First().ID }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if (!context.Shares.Any())
+            {
+                context.Shares.AddRange(
+                        new Share
+                        {
+                            NumOfShares = 19,
+                            PurchasePrice = 35.00,
+                            StockID = context.Stocks.Where(g => g.Company.Equals("Micron Technology")).First().ID,
+                            Date = DateTime.Now
+                        },
+                        new Share
+                        {
+                            NumOfShares = 48,
+                            PurchasePrice = 25.00,
+                            StockID = context.Stocks.Where(g => g.Company.Equals("Aquirer's Multiple ETF")).First().ID,
+                            Date = DateTime.Now
                         }
                     );
 

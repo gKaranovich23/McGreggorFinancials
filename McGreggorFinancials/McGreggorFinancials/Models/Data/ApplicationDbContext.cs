@@ -2,6 +2,7 @@
 using McGreggorFinancials.Models.Donations;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
+using McGreggorFinancials.Models.Stocks;
 using McGreggorFinancials.Models.Targets;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -39,5 +40,11 @@ namespace McGreggorFinancials.Models.Data
         public DbSet<Charity> Charities { get; set; }
 
         public DbSet<Donation> Donations { get; set; }
+
+        public DbSet<Sector> Sectors { get; set; }
+
+        public DbSet<Share> Shares { get; set; }
+
+        public DbSet<Stock> Stocks { get; set; }
     }
 }

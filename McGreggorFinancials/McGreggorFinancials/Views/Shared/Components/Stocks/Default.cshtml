@@ -1,0 +1,32 @@
+﻿@model List<StockViewModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-left">Ticker</th>
+            <th>Company</th>
+            <th class="text-center">Num Of Shares</th>
+            <th class="text-center">Current Value</th>
+            <th class="text-center">Total Value</th>
+            <th class="text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td class="text-left">@e.Stock.Ticker</td>
+                <td>@e.Stock.Company</td>
+                <td class="text-center">@e.TotalNumOfShares</td>
+                <td class="text-center">@e.CurrentValue</td>
+                <td class="text-center">@e.TotalValue</td>
+                <td class="text-center">
+                    <a asp-controller="Stock" asp-action="Sell"
+                       asp-route-stockId="@e.Stock.ID">
+                        Sell
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -5,3 +5,74 @@
 
 <h2>Dashboard</h2>
 
+<div class="row quick-stats">
+    <div class="col-sm-6 col-md-3">
+        @await Component.InvokeAsync("NetWorth")
+    </div>
+    <div class="col-sm-6 col-md-3">
+        @await Component.InvokeAsync("Savings")
+    </div>
+    <div class="col-sm-6 col-md-3">
+        @await Component.InvokeAsync("ExpenseVsBudget")
+    </div>
+    <div class="col-sm-6 col-md-3">
+        @await Component.InvokeAsync("Donations")
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Monthly Expenses By Category</h4>
+                @await Component.InvokeAsync("ExpenseCategories")
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Stock Chart</h4>
+                @await Component.InvokeAsync("StockChart")
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Stocks</h4>
+
+                @await Component.InvokeAsync("Stocks")
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Credit Cards</h4>
+
+                @await Component.InvokeAsync("CreditCards")
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawExpenseCatChart);
+        google.charts.setOnLoadCallback(drawStockChart);
+
+        $(window).resize(function () {
+            drawExpenseCatChart();
+            drawStockChart();
+        });
+    </script>
+}

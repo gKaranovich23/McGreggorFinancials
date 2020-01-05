@@ -7,6 +7,7 @@ using McGreggorFinancials.Models.Data;
 using McGreggorFinancials.Models.Donations.Repository;
 using McGreggorFinancials.Models.Expenses.Repositories;
 using McGreggorFinancials.Models.Income.Repositories;
+using McGreggorFinancials.Models.Stocks.Repository;
 using McGreggorFinancials.Models.Targets.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,7 @@ namespace McGreggorFinancials
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
                     Configuration["Data:McgreggorFinancials:ConnectionString"]
                 ));
+
             services.AddTransient<IIncomeCategoryRepository, IncomeCategoryRepository>();
             services.AddTransient<IIncomeEntryRespository, IncomeEntryRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
@@ -44,6 +46,18 @@ namespace McGreggorFinancials
             services.AddTransient<IAccountTypeRepository, AccountTypeRepository>();
             services.AddTransient<ICharityRepository, CharityRepository>();
             services.AddTransient<IDonationRepository, DonationRepository>();
+            services.AddTransient<ISectorRepository, SectorRepository>();
+            services.AddTransient<IStockRepository, StockRepository>();
+            services.AddTransient<IShareRepository, ShareRepository>();
+
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(600);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddMvc();
         }
@@ -56,8 +70,10 @@ namespace McGreggorFinancials
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
             app.UseStatusCodePages();
             app.UseStaticFiles();
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -1,0 +1,157 @@
+﻿@model StockListViewModel
+@{
+    ViewData["Title"] = "YearlyReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <form asp-action="YearlyReport" method="post">
+        <h1>Stocks: <input id="dateStr" type="text" name="dateStr" class="datepicker" value="@Model.Date.ToString("yyyy")" /></h1>
+        <button typeof="submit" hidden>Submit</button>
+    </form>
+</header>
+
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">Yearly Stock</h4>
+                <div id="exLine_chart" class="chart"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">% By Sector</h4>
+                <h6 class="card-subtitle"></h6>
+                <div id="exCat_chart" class="chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-left">Ticker</th>
+                        <th>Company</th>
+                        <th class="text-center">Num Of Shares</th>
+                        <th class="text-center">Current Price</th>
+                        <th class="text-center">Total Value</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Stocks)
+                    {
+                        <tr>
+                            <td class="text-left">@e.Stock.Ticker</td>
+                            <td>@e.Stock.Company</td>
+                            <td class="text-center">@e.TotalNumOfShares</td>
+                            <td class="text-center">@e.CurrentValue</td>
+                            <td class="text-center">@e.TotalValue</td>
+                            <td class="text-center">
+                                <a asp-action="Sell"
+                                   asp-route-stockId="@e.Stock.ID">
+                                    Sell
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('.datepicker').datepicker({
+            format: "yyyy",
+            startView: "years",
+            minViewMode: "years",
+        });
+
+        $('.datepicker').datepicker().on('changeDate', function (ev) {
+            $(this).parent().siblings('button')[0].click();
+        });
+
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawLineChart);
+        google.charts.setOnLoadCallback(drawPieChart);
+
+        function drawLineChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.LineChartData));
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Month');
+            data.addColumn('number', 'Value');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].xData, Number(modelData[i].yData)]
+                ]);
+            }
+
+            // Set chart options
+        var options = {
+            hAxis: {
+                title: 'Month',
+                titleColor: '#fff',
+                gridlines: { color: '#808080' },
+                baselineColor: '#fff',
+                textStyle: {color: '#fff'}
+            },
+            vAxis: {
+                title: 'Monthly Value',
+                titleColor: '#fff',
+                gridlines: { color: '#808080' },
+                minorGridlines: {color: '#808080'},
+                baselineColor: '#808080',
+                textStyle: {color: '#fff'}
+            },
+            legend: {
+                textStyle: {color: '#fff'}
+            },
+            backgroundColor: 'transparent'
+        };
+
+            var chart = new google.visualization.LineChart(document.getElementById('exLine_chart'));
+            chart.draw(data, options);
+        }
+
+        function drawPieChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.PieChartData));
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Sector');
+            data.addColumn('number', '% of Sector');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].category, Number(modelData[i].data)]
+                ]);
+            }
+
+            // Set chart options
+            var options = {
+                backgroundColor:'transparent',
+                legend: {
+                    textStyle: {color: '#fff'}
+                }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('exCat_chart'));
+            chart.draw(data, options);
+        }
+
+        $(window).resize(function () {
+            drawPieChart();
+            drawLineChart();
+        });
+    </script>
+}

@@ -1,0 +1,47 @@
+﻿@model List<Share>
+
+@{
+    ViewData["Title"] = "SharesLog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>All Logged Shares Activities</h1>
+</header>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-left">Ticker</th>
+                        <th>Company</th>
+                        <th class="text-center">Num Of Shares</th>
+                        <th class="text-center">Price</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr>
+                            <td class="text-left">@e.Stock.Ticker</td>
+                            <td>@e.Stock.Company</td>
+                            <td class="text-center">@e.NumOfShares</td>
+                            <td class="text-center">@e.PurchasePrice</td>
+                            <td class="text-center">@e.Date</td>
+                            <td class="text-center">
+                                <a asp-action="Edit"
+                                   asp-route-shareId="@e.ID">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
