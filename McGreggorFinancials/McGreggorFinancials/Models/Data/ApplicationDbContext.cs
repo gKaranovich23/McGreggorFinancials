@@ -1,4 +1,5 @@
 ﻿using McGreggorFinancials.Models.Accounts;
+using McGreggorFinancials.Models.Donations;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
 using McGreggorFinancials.Models.Targets;
@@ -34,5 +35,9 @@ namespace McGreggorFinancials.Models.Data
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
 
         public DbSet<CreditBalance> CreditBalance { get; set; }
+
+        public DbSet<Charity> Charities { get; set; }
+
+        public DbSet<Donation> Donations { get; set; }
     }
 }

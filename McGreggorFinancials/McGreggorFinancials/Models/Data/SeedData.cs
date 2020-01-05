@@ -1,4 +1,5 @@
 ﻿using McGreggorFinancials.Models.Accounts;
+using McGreggorFinancials.Models.Donations;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
 using McGreggorFinancials.Models.Targets;
@@ -178,6 +179,40 @@ namespace McGreggorFinancials.Models.Data
                         PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).First().ID
                     }
                 );
+
+                context.SaveChanges();
+            }
+
+            if (!context.Charities.Any())
+            {
+                context.Charities.AddRange(
+                        new Charity { Name = "Fuck Cancer" },
+                        new Charity { Name = "Humane Society" }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if (!context.Donations.Any())
+            {
+                context.Donations.AddRange(
+                        new Donation
+                        {
+                            Description = "Fuck Cancer Donation",
+                            Amount = 50.00,
+                            Date = DateTime.Now,
+                            CharityID = context.Charities.Where(i => i.Name.Equals("Fuck Cancer")).First().ID,
+                            PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).First().ID
+                        },
+                        new Donation
+                        {
+                            Description = "Humane Society Donation",
+                            Amount = 50.00,
+                            Date = DateTime.Now,
+                            CharityID = context.Charities.Where(i => i.Name.Equals("Humane Society")).First().ID,
+                            PaymentMethodID = context.PaymentMethods.Where(x => x.Method.Equals("Discover Card")).First().ID
+                        }
+                    );
 
                 context.SaveChanges();
             }

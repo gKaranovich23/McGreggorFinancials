@@ -15,18 +15,18 @@ namespace McGreggorFinancials.Models.Navigation
             {
                 new ModuleLink
                 {
-                    Action = "ExpenseCategories",
-                    Name = "Expense Categories"
+                    Action = "Accounts",
+                    Name = "Accounts"
                 },
                 new ModuleLink
                 {
-                    Action = "Targets",
-                    Name = "Targets"
+                    Action = "AccountTypes",
+                    Name = "Account Types"
                 },
                 new ModuleLink
                 {
-                    Action = "TargetTypes",
-                    Name = "Target Types"
+                    Action = "Charities",
+                    Name = "Charities"
                 },
                 new ModuleLink
                 {
@@ -40,13 +40,18 @@ namespace McGreggorFinancials.Models.Navigation
                 },
                 new ModuleLink
                 {
-                    Action = "Accounts",
-                    Name = "Accounts"
+                    Action = "ExpenseCategories",
+                    Name = "Expense Categories"
                 },
                 new ModuleLink
                 {
-                    Action = "AccountTypes",
-                    Name = "Account Types"
+                    Action = "Targets",
+                    Name = "Targets"
+                },
+                new ModuleLink
+                {
+                    Action = "TargetTypes",
+                    Name = "Target Types"
                 }
             };
         }

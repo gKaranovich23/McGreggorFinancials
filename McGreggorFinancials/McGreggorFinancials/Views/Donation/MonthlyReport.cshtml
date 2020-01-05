@@ -1,0 +1,177 @@
+﻿@model DonationsListViewModel
+
+@{
+    ViewData["Title"] = "MonthlyReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <form asp-action="MonthlyReport" method="post">
+        <h1>Donations: <input id="dateStr" type="text" name="dateStr" class="datepicker" value="@Model.Date.ToString("MMMM yyyy")" /></h1>
+        <button typeof="submit" hidden>Submit</button>
+    </form>
+</header>
+
+
+<a asp-action="Create" class="btn btn-primary btn-add--expense">Add Donation</a>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">Monthly Donations</h4>
+                <div id="exLine_chart">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">% By Charity</h4>
+                <h6 class="card-subtitle"></h6>
+                <div id="exCat_chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-left">ID</th>
+                        <th>Description</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Donations)
+                    {
+                        <tr>
+                            <td class="text-left">@e.ID</td>
+                            <td>@e.Description</td>
+                            <td class="text-center">$@e.Amount</td>
+                            <td class="text-center">@e.Date.ToString("MM/dd/yyyy")</td>
+                            <td class="text-center">
+                                <form asp-action="Delete" method="post">
+                                    <a asp-action="Edit"
+                                       asp-route-donationId="@e.ID">
+                                        Edit
+                                    </a>
+                                    |
+                                    <input type="hidden" name="donationId" value="@e.ID" />
+                                    <button typeof="submit" class="btn-delete--expense">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('.datepicker').datepicker({
+            format: "MM yyyy",
+            startView: "months",
+            minViewMode: "months",
+        });
+
+        $('.datepicker').datepicker().on('changeDate', function (ev) {
+            $(this).parent().siblings('button')[0].click();
+        });
+
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawLineChart);
+        google.charts.setOnLoadCallback(drawPieChart);
+
+        function drawLineChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.LineChartData));
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Day');
+            data.addColumn('number', 'Donations');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].xData, Number(modelData[i].yData)]
+                ]);
+            }
+
+            var lineColor = '';
+
+            if (@Model.Total >= @Model.Goal.Amount) {
+                lineColor = '#31c81f';
+            }
+            else {
+                lineColor = 'red';
+            }
+
+            // Set chart options
+            var options = {
+                colors: [lineColor],
+                backgroundColor: 'transparent',
+                hAxis: {
+                    title: 'Day',
+                    titleColor: '#fff',
+                    gridlines: { color: '#808080' },
+                    baselineColor: '#fff',
+                    textStyle: {color: '#fff'}
+                },
+                vAxis: {
+                    title: 'Donation Total',
+                    titleColor: '#fff',
+                    gridlines: { color: '#808080' },
+                    minorGridlines: {color: '#808080'},
+                    baselineColor: '#808080',
+                    textStyle: {color: '#fff'}
+                },
+                legend: {
+                    textStyle: {color: '#fff'}
+                }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('exLine_chart'));
+            chart.draw(data, options);
+        }
+
+        function drawPieChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.PieChartData));
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Charities');
+            data.addColumn('number', '% of Donations');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].category, Number(modelData[i].data)]
+                ]);
+            }
+
+            // Set chart options
+            var options = {
+                backgroundColor:'transparent',
+                legend: {
+                    textStyle: {color: '#fff'}
+                }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('exCat_chart'));
+            chart.draw(data, options);
+        }
+
+        $(window).resize(function () {
+            drawPieChart();
+            drawLineChart();
+        });
+    </script>
+}

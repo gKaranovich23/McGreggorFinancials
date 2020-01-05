@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using McGreggorFinancials.Models.Accounts.Repositories;
 using McGreggorFinancials.Models.Data;
+using McGreggorFinancials.Models.Donations.Repository;
 using McGreggorFinancials.Models.Expenses.Repositories;
 using McGreggorFinancials.Models.Income.Repositories;
 using McGreggorFinancials.Models.Targets.Repositories;
@@ -41,6 +42,8 @@ namespace McGreggorFinancials
             services.AddTransient<IPaymentMethodRepository, PaymentMethodRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountTypeRepository, AccountTypeRepository>();
+            services.AddTransient<ICharityRepository, CharityRepository>();
+            services.AddTransient<IDonationRepository, DonationRepository>();
 
             services.AddMvc();
         }

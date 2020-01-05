@@ -1,0 +1,56 @@
+﻿@model DonationFormViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>@ViewBag.FormTitle</h1>
+</header>
+<hr />
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Donation.ID" />
+    <div class="form-group">
+        <span asp-validation-for="Donation.Charity" class="text-danger"></span>
+        <label asp-for="Donation.CharityID" class="control-label"></label>
+        <select asp-for="Donation.CharityID" asp-items="Model.Charities" class="form-control">
+            <option>Please select a category</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Donation.Description" class="control-label"></label>
+        <textarea asp-for="Donation.Description" class="form-control"></textarea>
+        <span asp-validation-for="Donation.Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <span asp-validation-for="Donation.PaymentMethod" class="text-danger"></span>
+        <label asp-for="Donation.PaymentMethodID" class="control-label"></label>
+        <select asp-for="Donation.PaymentMethodID" asp-items="Model.PaymentMethods" class="form-control">
+            <option>Please select a payment method</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Donation.Amount" class="control-label"></label>
+        <input asp-for="Donation.Amount" class="form-control" />
+        <span asp-validation-for="Donation.Amount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Donation.Date" class="control-label"></label>
+        <input asp-for="Donation.Date" type="text" class="form-control datepicker" />
+        <span asp-validation-for="Donation.Date" class="text-danger"></span>
+    </div>
+    <div class="text-center">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="MonthlyReport" class="btn btn-default">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $('.datepicker').datepicker();
+    </script>
+}
