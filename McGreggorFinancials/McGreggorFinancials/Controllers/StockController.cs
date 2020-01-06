@@ -191,49 +191,52 @@ namespace McGreggorFinancials.Controllers
             DateTime currentDate = new DateTime(now.Year, now.Month, 1);
             while (currentDate <= now)
             {
-                if (currentDate.DayOfWeek == DayOfWeek.Saturday || currentDate.DayOfWeek == DayOfWeek.Sunday)
-                {
-                    lineData.Add(new LineChartData
-                    {
-                        XData = currentDate.Day.ToString(),
-                        YData = currentValue.ToString()
-                    });
+                double total = 0;
+                DateTime valueDate;
 
-                    currentDate = currentDate.AddDays(1);
+                if (currentDate.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    valueDate = currentDate.AddDays(-1);
+                }
+                else if(currentDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    valueDate = currentDate.AddDays(-2);
                 }
                 else
                 {
-                    double total = 0;
-                    foreach (var stock2 in stocks)
-                    {
-                        Dictionary<DateTime, double> stockData =
-                            JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock2.Ticker));
-
-                        var sData = stockData.Keys.Where(x => Convert.ToDateTime(x).Day == currentDate.Day &&
-                             Convert.ToDateTime(x).Month == currentDate.Month && Convert.ToDateTime(x).Year == currentDate.Year).FirstOrDefault();
-
-                        if (sData != null && sData != DateTime.MinValue)
-                        {
-                            List<Share> lineDataShares = shares.Where(e => e.StockID == stock2.ID &&
-                             e.Date.Year == currentDate.Year ? (e.Date.Month == currentDate.Month ? e.Date.Day <= currentDate.Day
-                             : e.Date.Month <= currentDate.Month) : e.Date.Year <= currentDate.Year).ToList();
-                            int totalShares = lineDataShares.Select(e => e.NumOfShares).Sum();
-                            double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
-                            double stockValue = s * (double)totalShares;
-                            total += stockValue;
-                        }
-                    }
-
-                    currentValue = total;
-
-                    lineData.Add(new LineChartData
-                    {
-                        XData = currentDate.Day.ToString(),
-                        YData = currentValue.ToString()
-                    });
-
-                    currentDate = currentDate.AddDays(1);
+                    valueDate = currentDate;
                 }
+
+                foreach (var stock in stocks)
+                {
+                    Dictionary<DateTime, double> stockData =
+                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
+
+                    var sData = stockData.Keys.Where(x => Convert.ToDateTime(x).Day == valueDate.Day &&
+                         Convert.ToDateTime(x).Month == valueDate.Month && Convert.ToDateTime(x).Year == valueDate.Year).FirstOrDefault();
+
+                    if (sData != null && sData != DateTime.MinValue)
+                    {
+                        List<Share> lineDataShares = shares.Where(e => e.StockID == stock.ID).ToList();
+                        lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
+                        lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
+                        lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
+                        int totalShares = lineDataShares.Select(e => e.NumOfShares).Sum();
+                        double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
+                        double stockValue = s * (double)totalShares;
+                        total += stockValue;
+                    }
+                }
+
+                currentValue = total;
+
+                lineData.Add(new LineChartData
+                {
+                    XData = currentDate.Day.ToString(),
+                    YData = currentValue.ToString()
+                });
+
+                currentDate = currentDate.AddDays(1);
             }
 
             List<int> sectors = _stockRepo.Stocks.Select(x => x.SectorID).Distinct().ToList();
@@ -263,7 +266,7 @@ namespace McGreggorFinancials.Controllers
             TargetAmount goldGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Gold")).FirstOrDefault();
             TargetAmount bondGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Bond")).FirstOrDefault();
 
-            decimal targetInvestmentAmount = Convert.ToDecimal(incomes.Select(i => i.Amount).Sum());
+            decimal targetInvestmentAmount = Convert.ToDecimal(incomes.Select(i => i.Amount).Sum()) * investmentGoal.Percentage / 100;
 
             return View(new StockListViewModel
             {
