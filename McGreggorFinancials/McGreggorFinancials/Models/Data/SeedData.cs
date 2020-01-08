@@ -1,4 +1,5 @@
 ﻿using McGreggorFinancials.Models.Accounts;
+using McGreggorFinancials.Models.Crypto;
 using McGreggorFinancials.Models.Donations;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
@@ -254,6 +255,24 @@ namespace McGreggorFinancials.Models.Data
                             StockID = context.Stocks.Where(g => g.Company.Equals("Aquirer's Multiple ETF")).First().ID,
                             Date = DateTime.Now
                         }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if(!context.CryptoCurrencies.Any())
+            {
+                context.CryptoCurrencies.AddRange(
+                        new CryptoCurrency { Name = "Bitcoin", Ticker = "BTC" }
+                    );
+
+                context.SaveChanges();
+            }
+
+            if(!context.Coins.Any())
+            {
+                context.Coins.AddRange(
+                        new Coin { NumOfCoins = 10, PurchasePrice = 100, CryptoCurrencyID = context.CryptoCurrencies.Where(c => c.Name.Equals("Bitcoin")).First().ID }
                     );
 
                 context.SaveChanges();

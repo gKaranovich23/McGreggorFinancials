@@ -1,4 +1,5 @@
 ﻿using McGreggorFinancials.Models.Accounts;
+using McGreggorFinancials.Models.Crypto;
 using McGreggorFinancials.Models.Donations;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Income;
@@ -46,5 +47,9 @@ namespace McGreggorFinancials.Models.Data
         public DbSet<Share> Shares { get; set; }
 
         public DbSet<Stock> Stocks { get; set; }
+
+        public DbSet<CryptoCurrency> CryptoCurrencies { get; set; }
+
+        public DbSet<Coin> Coins { get; set; }
     }
 }
