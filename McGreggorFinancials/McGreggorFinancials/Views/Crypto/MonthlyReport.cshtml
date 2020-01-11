@@ -1,0 +1,192 @@
+﻿@model CryptoListViewModel
+
+@{
+    ViewData["Title"] = "MonthlyReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <form asp-action="MonthlyReport" method="post">
+        <h1>Crypto: <input id="dateStr" type="text" name="dateStr" class="datepicker" value="@Model.Date.ToString("MMMM yyyy")" /></h1>
+        <button typeof="submit" hidden>Submit</button>
+    </form>
+</header>
+
+
+<div id="btns_stock">
+    <a asp-action="Create" class="btn btn-primary">Add Coins</a>
+</div>
+
+<div class="row quick-stats">
+    <div class="col-sm-6 col-md-6">
+        <div class="quick-stats__item">
+            <div class="quick-stats__info">
+                <h2>
+                    @if (Model.AmountInvested < Model.CryptoGoal)
+                    {
+                        <span class="text-danger">$@Model.AmountInvested/$@(Model.CryptoGoal)</span>
+                    }
+                    else
+                    {
+                        <span class="text-success">$@Model.AmountInvested/$@(Model.CryptoGoal)</span>
+                    }
+                </h2>
+                <small>Compared To Goal</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6">
+        <div class="quick-stats__item">
+            <div class="quick-stats__info">
+                <h2>@Model.CryptoPercentage % => $<span>@Model.CryptoGoal</span></h2>
+                <small>Stock Goal</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">Monthly Report</h4>
+                <div id="exLine_chart">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card card-lg">
+            <div class="card-body">
+                <h4 class="card-title">% By Currency</h4>
+                <h6 class="card-subtitle"></h6>
+                <div id="exCat_chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-left">Ticker</th>
+                        <th>Currency</th>
+                        <th class="text-center">Num Of Coins</th>
+                        <th class="text-center">Current Value</th>
+                        <th class="text-center">Total Value</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Stocks)
+                    {
+                        <tr>
+                            <td class="text-left">@e.Currency.Ticker</td>
+                            <td>@e.Currency.Name</td>
+                            <td class="text-center">@e.TotalNumOfCoins</td>
+                            <td class="text-center">@e.CurrentValue</td>
+                            <td class="text-center">@e.TotalValue</td>
+                            <td class="text-center">
+                                <a asp-action="Sell"
+                                   asp-route-coinId="@e.Currency.ID">
+                                    Sell
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('.datepicker').datepicker({
+            format: "MM yyyy",
+            startView: "months",
+            minViewMode: "months",
+        });
+
+        $('.datepicker').datepicker().on('changeDate', function (ev) {
+            $(this).parent().siblings('button')[0].click();
+        });
+
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawLineChart);
+        google.charts.setOnLoadCallback(drawPieChart);
+
+        function drawLineChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.LineChartData));
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Day');
+            data.addColumn('number', 'Value');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].xData, Number(modelData[i].yData)]
+                ]);
+            }
+
+            // Set chart options
+        var options = {
+            hAxis: {
+                title: 'Day',
+                titleColor: '#fff',
+                gridlines: { color: '#808080' },
+                baselineColor: '#fff',
+                textStyle: {color: '#fff'}
+            },
+            vAxis: {
+                title: 'Daily Value',
+                titleColor: '#fff',
+                gridlines: { color: '#808080' },
+                minorGridlines: {color: '#808080'},
+                baselineColor: '#808080',
+                textStyle: {color: '#fff'}
+            },
+            legend: {
+                textStyle: {color: '#fff'}
+            },
+            backgroundColor: 'transparent'
+        };
+
+            var chart = new google.visualization.LineChart(document.getElementById('exLine_chart'));
+            chart.draw(data, options);
+        }
+
+        function drawPieChart() {
+            var modelData = @Html.Raw(Json.Serialize(Model.PieChartData));
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Currency');
+            data.addColumn('number', '% of Currency');
+
+            for (var i = 0; i < $(modelData).length; i++) {
+                data.addRows([
+                    [modelData[i].category, Number(modelData[i].data)]
+                ]);
+            }
+
+            // Set chart options
+            var options = {
+                backgroundColor:'transparent',
+                legend: {
+                    textStyle: {color: '#fff'}
+                }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('exCat_chart'));
+            chart.draw(data, options);
+        }
+
+        $(window).resize(function () {
+            drawPieChart();
+            drawLineChart();
+        });
+    </script>
+}

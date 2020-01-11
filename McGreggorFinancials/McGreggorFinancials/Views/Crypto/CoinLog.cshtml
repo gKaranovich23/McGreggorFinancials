@@ -1,0 +1,47 @@
+﻿@model List<Coin>
+
+@{
+    ViewData["Title"] = "SharesLog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>All Logged Coin Activities</h1>
+</header>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-left">Ticker</th>
+                        <th>Currency</th>
+                        <th class="text-center">Num Of Coins</th>
+                        <th class="text-center">Price</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr>
+                            <td class="text-left">@e.CryptoCurrency.Ticker</td>
+                            <td>@e.CryptoCurrency.Name</td>
+                            <td class="text-center">@e.NumOfCoins</td>
+                            <td class="text-center">@e.PurchasePrice</td>
+                            <td class="text-center">@e.Date</td>
+                            <td class="text-center">
+                                <a asp-action="Edit"
+                                   asp-route-coinId="@e.ID">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+﻿@model List<LineChartData>
+
+<div id="stock_chart"></div>
+
+<script type="text/javascript">
+    function drawStockChart() {
+        var modelData = @Html.Raw(Json.Serialize(Model));
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Day');
+        data.addColumn('number', 'Value');
+
+        for (var i = 0; i < $(modelData).length; i++) {
+            data.addRows([
+                [modelData[i].xData, Number(modelData[i].yData)]
+            ]);
+        }
+
+        // Set chart options
+        var options = {
+            hAxis: {
+                title: 'Day',
+                titleColor: '#fff',
+                gridlines: { color: '#808080' },
+                baselineColor: '#fff',
+                textStyle: {color: '#fff'}
+            },
+            vAxis: {
+                title: 'Daily Value',
+                titleColor: '#fff',
+                gridlines: { color: '#808080' },
+                minorGridlines: {color: '#808080'},
+                baselineColor: '#808080',
+                textStyle: {color: '#fff'}
+            },
+            legend: {
+                textStyle: {color: '#fff'}
+            },
+            backgroundColor: 'transparent'
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('stock_chart'));
+        chart.draw(data, options);
+    }
+</script>

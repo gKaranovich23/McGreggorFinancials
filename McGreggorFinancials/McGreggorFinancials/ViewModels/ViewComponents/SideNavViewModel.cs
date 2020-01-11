@@ -15,6 +15,7 @@ namespace McGreggorFinancials.ViewModels.ViewComponents
                 new HomeModule(),
                 new AdminModule(),
                 new CreditModule(),
+                new CryptoModule(),
                 new DonationModule(),
                 new ExpenseModule(),
                 new IncomeModule(),
