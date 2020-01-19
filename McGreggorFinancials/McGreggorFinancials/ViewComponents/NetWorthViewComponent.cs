@@ -1,6 +1,9 @@
 ﻿using Avapi;
+using Avapi.AvapiDIGITAL_CURRENCY_DAILY;
 using Avapi.AvapiTIME_SERIES_DAILY;
 using McGreggorFinancials.Models.Accounts.Repositories;
+using McGreggorFinancials.Models.Crypto;
+using McGreggorFinancials.Models.Crypto.Repository;
 using McGreggorFinancials.Models.Expenses.Repositories;
 using McGreggorFinancials.Models.Stocks;
 using McGreggorFinancials.Models.Stocks.Repository;
@@ -20,14 +23,18 @@ namespace McGreggorFinancials.ViewComponents
         private IShareRepository _sharesRepo;
         private IStockRepository _stockRepo;
         private IPaymentMethodRepository _payRepo;
+        private ICryptoCurrencyRepository _cryptoRepo;
+        private ICoinRepository _coinRepo;
 
         public NetWorthViewComponent(IAccountRepository saveRepo, IShareRepository shareRepo, IPaymentMethodRepository payRepo, 
-            IStockRepository stockRepo)
+            IStockRepository stockRepo, ICryptoCurrencyRepository cryptoRepo, ICoinRepository coinRepo)
         {
             _saveRepo = saveRepo;
             _sharesRepo = shareRepo;
             _payRepo = payRepo;
             _stockRepo = stockRepo;
+            _cryptoRepo = cryptoRepo;
+            _coinRepo = coinRepo;
         }
 
         public IViewComponentResult Invoke()
@@ -52,6 +59,23 @@ namespace McGreggorFinancials.ViewComponents
                 List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
                 int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
                 netWorth += Convert.ToDouble(sData.Value) * (double)totalShares;
+            }
+
+            Int_DIGITAL_CURRENCY_DAILY crypto_series_daily = connection.GetQueryObject_DIGITAL_CURRENCY_DAILY();
+
+            List<CryptoCurrency> cryptos = _cryptoRepo.CryptoCurrencies.ToList();
+            List<Coin> coins = _coinRepo.Coins.ToList();
+
+            foreach (var crypto in cryptos)
+            {
+                Dictionary<DateTime, double> cryptoData =
+                    JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(crypto.Ticker));
+
+                var sData = cryptoData.First();
+
+                List<Coin> coinList = coins.Where(e => e.CryptoCurrencyID == crypto.ID).ToList();
+                int totalCoins = coinList.Select(e => e.NumOfCoins).Sum();
+                netWorth += Convert.ToDouble(sData.Value) * (double)totalCoins;
             }
 
             return View(netWorth);

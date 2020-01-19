@@ -105,18 +105,8 @@
                 ]);
             }
 
-            var lineColor = '';
-
-            if (@Model.Total > @Model.Target.Amount) {
-                lineColor = 'red';
-            }
-            else {
-                lineColor = '#31c81f';
-            }
-
             // Set chart options
             var options = {
-                colors: [lineColor],
                 backgroundColor: 'transparent',
                 hAxis: {
                     title: 'Day',

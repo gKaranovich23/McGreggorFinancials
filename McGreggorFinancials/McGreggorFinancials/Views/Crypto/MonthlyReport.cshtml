@@ -22,14 +22,7 @@
         <div class="quick-stats__item">
             <div class="quick-stats__info">
                 <h2>
-                    @if (Model.AmountInvested < Model.CryptoGoal)
-                    {
-                        <span class="text-danger">$@Model.AmountInvested/$@(Model.CryptoGoal)</span>
-                    }
-                    else
-                    {
-                        <span class="text-success">$@Model.AmountInvested/$@(Model.CryptoGoal)</span>
-                    }
+                    <span>$@Model.AmountInvested/$@(Model.CryptoGoal)</span>
                 </h2>
                 <small>Compared To Goal</small>
             </div>
@@ -38,8 +31,8 @@
     <div class="col-sm-6 col-md-6">
         <div class="quick-stats__item">
             <div class="quick-stats__info">
-                <h2>@Model.CryptoPercentage % => $<span>@Model.CryptoGoal</span></h2>
-                <small>Stock Goal</small>
+                <h2>@Model.CryptoPercentage %    =>    $<span>@Model.CryptoGoal</span></h2>
+                <small>Crypto Goal</small>
             </div>
         </div>
     </div>

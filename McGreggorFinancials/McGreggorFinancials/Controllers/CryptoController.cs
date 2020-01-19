@@ -4,17 +4,17 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Avapi;
-using Avapi.AvapiTIME_SERIES_MONTHLY;
+using Avapi.AvapiDIGITAL_CURRENCY_MONTHLY;
 using McGreggorFinancials.Models.Accounts;
 using McGreggorFinancials.Models.Accounts.Repositories;
 using McGreggorFinancials.Models.Charting;
+using McGreggorFinancials.Models.Crypto;
+using McGreggorFinancials.Models.Crypto.Repository;
 using McGreggorFinancials.Models.Income;
 using McGreggorFinancials.Models.Income.Repositories;
-using McGreggorFinancials.Models.Stocks;
-using McGreggorFinancials.Models.Stocks.Repository;
 using McGreggorFinancials.Models.Targets;
 using McGreggorFinancials.Models.Targets.Repositories;
-using McGreggorFinancials.ViewModels.Stocks;
+using McGreggorFinancials.ViewModels.Crypto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,26 +22,24 @@ using Newtonsoft.Json;
 
 namespace McGreggorFinancials.Controllers
 {
-    public class StockController : Controller
+    public class CryptoController : Controller
     {
-        private IShareRepository _repo;
-        private IStockRepository _stockRepo;
+        private ICoinRepository _repo;
+        private ICryptoCurrencyRepository _stockRepo;
         private ITargetAmountRepository _goalRepo;
         private ITargetTypeRepository _goalTypeRepo;
-        private ISectorRepository _sectorRepo;
         private IAccountRepository _saveRepo;
         private IAccountTypeRepository _saveTypeRepo;
         private IIncomeEntryRespository _incomeRepo;
 
-        public StockController(IShareRepository repo, IStockRepository stockRepo,
-            ITargetAmountRepository goalRepo, ITargetTypeRepository goalTypeRepo, ISectorRepository sectorRepo,
+        public CryptoController(ICoinRepository repo, ICryptoCurrencyRepository stockRepo,
+            ITargetAmountRepository goalRepo, ITargetTypeRepository goalTypeRepo,
             IAccountRepository saveRepo, IAccountTypeRepository saveTypeRepo, IIncomeEntryRespository incomeRepo)
         {
             _repo = repo;
             _stockRepo = stockRepo;
             _goalRepo = goalRepo;
             _goalTypeRepo = goalTypeRepo;
-            _sectorRepo = sectorRepo;
             _saveRepo = saveRepo;
             _saveTypeRepo = saveTypeRepo;
             _incomeRepo = incomeRepo;
@@ -49,101 +47,101 @@ namespace McGreggorFinancials.Controllers
 
         public ViewResult Create()
         {
-            ViewBag.FormTitle = "Create Shares";
+            ViewBag.FormTitle = "Create Coins";
 
-            return View("Edit", new ShareFormViewModel
+            return View("Edit", new CoinFormViewModel
             {
-                Share = new Share(),
-                Stocks = new SelectList(_stockRepo.Stocks.ToList(), "ID", "Company"),
+                Coin = new Coin(),
+                CryptoCurrencies = new SelectList(_stockRepo.CryptoCurrencies.ToList(), "ID", "Name"),
                 ReturnUrl = Request.Headers["Referer"].ToString()
             });
         }
 
-        public ViewResult Edit(int shareId)
+        public ViewResult Edit(int coinId)
         {
-            ViewBag.FormTitle = "Edit Shares";
+            ViewBag.FormTitle = "Edit Coins";
 
-            return View(new ShareFormViewModel
+            return View(new CoinFormViewModel
             {
-                Share = _repo.Shares.FirstOrDefault(e => e.ID == shareId),
-                Stocks = new SelectList(_stockRepo.Stocks.ToList(), "ID", "Company"),
+                Coin = _repo.Coins.FirstOrDefault(e => e.ID == coinId),
+                CryptoCurrencies = new SelectList(_stockRepo.CryptoCurrencies.ToList(), "ID", "Name"),
                 ReturnUrl = Request.Headers["Referer"].ToString()
             });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ShareFormViewModel model)
+        public IActionResult Edit(CoinFormViewModel model)
         {
             if (ModelState.IsValid)
             {
                 Account account = _saveRepo.Accounts.Where(x => x.TypeID == _saveTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
 
-                if (model.Share.ID == 0)
+                if (model.Coin.ID == 0)
                 {
-                    account.Amount = (double)account.Amount - (model.Share.PurchasePrice * model.Share.NumOfShares);
+                    account.Amount = (double)account.Amount - (model.Coin.PurchasePrice * model.Coin.NumOfCoins);
                 }
                 else
                 {
-                    Share s = _repo.Shares.Where(x => x.ID == model.Share.ID).FirstOrDefault();
-                    account.Amount = (double)account.Amount + (s.PurchasePrice * s.NumOfShares);
-                    account.Amount = (double)account.Amount - (model.Share.PurchasePrice * model.Share.NumOfShares);
+                    Coin s = _repo.Coins.Where(x => x.ID == model.Coin.ID).FirstOrDefault();
+                    account.Amount = (double)account.Amount + (s.PurchasePrice * s.NumOfCoins);
+                    account.Amount = (double)account.Amount - (model.Coin.PurchasePrice * model.Coin.NumOfCoins);
                 }
 
-                _repo.Save(model.Share);
+                _repo.Save(model.Coin);
                 _saveRepo.Save(account);
-                TempData["message"] = $"Share #{model.Share.ID} has been saved";
+                TempData["message"] = $"Coin #{model.Coin.ID} has been saved";
                 return Redirect(model.ReturnUrl);
             }
             else
             {
-                if (model.Share.ID == 0)
+                if (model.Coin.ID == 0)
                 {
-                    ViewBag.FormTitle = "Create Shares";
+                    ViewBag.FormTitle = "Create Coins";
                 }
                 else
                 {
-                    ViewBag.FormTitle = "Edit Shares";
+                    ViewBag.FormTitle = "Edit Coins";
                 }
 
-                model.Stocks = new SelectList(_stockRepo.Stocks.ToList(), "ID", "Company");
+                model.CryptoCurrencies = new SelectList(_stockRepo.CryptoCurrencies.ToList(), "ID", "Name");
                 return View(model);
             }
         }
 
-        public ViewResult Sell(int stockId)
+        public ViewResult Sell(int coinId)
         {
-            Share s = _repo.Shares.Where(x => x.StockID == stockId).FirstOrDefault();
-            s.NumOfShares = 0;
+            Coin s = _repo.Coins.Where(x => x.CryptoCurrencyID == coinId).FirstOrDefault();
+            s.NumOfCoins = 0;
 
-            return View("Sell", new ShareFormViewModel
+            return View("Sell", new CoinFormViewModel
             {
-                Share = s,
-                Stocks = new SelectList(_stockRepo.Stocks.ToList(), "ID", "Company"),
+                Coin = s,
+                CryptoCurrencies = new SelectList(_stockRepo.CryptoCurrencies.ToList(), "ID", "Name"),
                 ReturnUrl = Request.Headers["Referer"].ToString()
             });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Sell(ShareFormViewModel model)
+        public IActionResult Sell(CoinFormViewModel model)
         {
             if (ModelState.IsValid)
             {
                 Account account = _saveRepo.Accounts.Where(x => x.TypeID == _saveTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
-                account.Amount = (double)account.Amount + (model.Share.PurchasePrice * model.Share.NumOfShares);
+                account.Amount = (double)account.Amount + (model.Coin.PurchasePrice * model.Coin.NumOfCoins);
 
-                model.Share.NumOfShares = -model.Share.NumOfShares;
-                _repo.Save(model.Share);
+                model.Coin.NumOfCoins = -model.Coin.NumOfCoins;
+                _repo.Save(model.Coin);
                 _saveRepo.Save(account);
-                TempData["message"] = $"Shares have been sold";
+                TempData["message"] = $"Coins have been sold";
                 return Redirect(model.ReturnUrl);
             }
             else
             {
-                ViewBag.FormTitle = "Sell Shares";
+                ViewBag.FormTitle = "Sell Coins";
 
-                model.Stocks = new SelectList(_stockRepo.Stocks.ToList(), "ID", "Company");
+                model.CryptoCurrencies = new SelectList(_stockRepo.CryptoCurrencies.ToList(), "ID", "Name");
                 return View(model);
             }
         }
@@ -155,11 +153,11 @@ namespace McGreggorFinancials.Controllers
                 date = DateTime.Now;
             }
 
-            List<Share> shares = _repo.Shares.Where(e => e.Date.Year == Convert.ToDateTime(date).Year ? (e.Date.Month == Convert.ToDateTime(date).Month ?
+            List<Coin> shares = _repo.Coins.Where(e => e.Date.Year == Convert.ToDateTime(date).Year ? (e.Date.Month == Convert.ToDateTime(date).Month ?
                 e.Date.Day <= Convert.ToDateTime(date).Day : e.Date.Month <= Convert.ToDateTime(date).Month) : e.Date.Year <= Convert.ToDateTime(date).Year).ToList();
             List<PieChartData> data = new List<PieChartData>();
-            List<StockViewModel> svm = new List<StockViewModel>();
-            List<Stock> stocks = _stockRepo.Stocks.ToList();
+            List<CryptoViewModel> svm = new List<CryptoViewModel>();
+            List<CryptoCurrency> stocks = _stockRepo.CryptoCurrencies.ToList();
 
             foreach (var stock in stocks)
             {
@@ -168,13 +166,13 @@ namespace McGreggorFinancials.Controllers
 
                 var sData = stockData.First();
 
-                List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
+                List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
+                int totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
 
-                svm.Add(new StockViewModel()
+                svm.Add(new CryptoViewModel()
                 {
-                    Stock = stock,
-                    TotalNumOfShares = totalShares,
+                    Currency = stock,
+                    TotalNumOfCoins = totalShares,
                     CurrentValue = Convert.ToDouble(sData.Value),
                     TotalValue = Convert.ToDouble(sData.Value) * (double)totalShares
                 });
@@ -198,7 +196,7 @@ namespace McGreggorFinancials.Controllers
                 {
                     valueDate = currentDate.AddDays(-1);
                 }
-                else if(currentDate.DayOfWeek == DayOfWeek.Sunday)
+                else if (currentDate.DayOfWeek == DayOfWeek.Sunday)
                 {
                     valueDate = currentDate.AddDays(-2);
                 }
@@ -217,11 +215,11 @@ namespace McGreggorFinancials.Controllers
 
                     if (sData != null && sData != DateTime.MinValue)
                     {
-                        List<Share> lineDataShares = shares.Where(e => e.StockID == stock.ID).ToList();
+                        List<Coin> lineDataShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
                         lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
                         lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
                         lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                        int totalShares = lineDataShares.Select(e => e.NumOfShares).Sum();
+                        int totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
                         double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
                         double stockValue = s * (double)totalShares;
                         total += stockValue;
@@ -239,48 +237,42 @@ namespace McGreggorFinancials.Controllers
                 currentDate = currentDate.AddDays(1);
             }
 
-            List<int> sectors = _stockRepo.Stocks.Select(x => x.SectorID).Distinct().ToList();
+            List<int> sectors = _stockRepo.CryptoCurrencies.Select(x => x.ID).Distinct().ToList();
             foreach (var sector in sectors)
             {
-                List<Share> sectorShares = shares.Where(e => e.Date.Year == currentDate.Year ? (e.Date.Month == currentDate.Month
+                List<Coin> sectorShares = shares.Where(e => e.Date.Year == currentDate.Year ? (e.Date.Month == currentDate.Month
                     ? e.Date.Day <= currentDate.Day : e.Date.Month <= currentDate.Month) : e.Date.Year <= currentDate.Year).ToList();
-                int totalShares = sectorShares.Where(e => e.Stock.SectorID == sector).Select(e => e.NumOfShares).Sum();
+                int totalShares = sectorShares.Where(e => e.CryptoCurrency.ID == sector).Select(e => e.NumOfCoins).Sum();
                 data.Add(new PieChartData
                 {
-                    Category = _sectorRepo.Sectors.Where(x => x.ID == sector).FirstOrDefault().Name,
+                    Category = _stockRepo.CryptoCurrencies.Where(x => x.ID == sector).FirstOrDefault().Name,
                     Data = Convert.ToString(totalShares)
                 });
             }
 
             double amountInvested = 0;
-            List<Share> monthlyShares = shares.Where(e => e.Date.Month == currentDate.Month && e.Date.Year == currentDate.Year).ToList();
+            List<Coin> monthlyShares = shares.Where(e => e.Date.Month == currentDate.Month && e.Date.Year == currentDate.Year).ToList();
             foreach (var s in monthlyShares)
             {
-                amountInvested += (double)s.PurchasePrice * (double)s.NumOfShares;
+                amountInvested += (double)s.PurchasePrice * (double)s.NumOfCoins;
             }
 
             List<IncomeEntry> incomes = _incomeRepo.IncomeEntries.Where(i => i.Date.Month == date.Value.Month && i.Date.Year == date.Value.Year).ToList();
 
             TargetAmount investmentGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Investments")).FirstOrDefault();
-            TargetAmount stockGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Stock")).FirstOrDefault();
-            TargetAmount goldGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Gold")).FirstOrDefault();
-            TargetAmount bondGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Bond")).FirstOrDefault();
+            TargetAmount cryptoGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Crypto")).FirstOrDefault();
 
             decimal targetInvestmentAmount = Convert.ToDecimal(incomes.Select(i => i.Amount).Sum()) * investmentGoal.Percentage / 100;
 
-            return View(new StockListViewModel
+            return View(new CryptoListViewModel
             {
                 Stocks = svm,
                 Date = date.Value,
                 PieChartData = data,
                 LineChartData = lineData,
-                AmountInvested = Convert.ToDecimal(shares.Select(e => e.NumOfShares * e.PurchasePrice).Sum()),
-                StockGoal = targetInvestmentAmount * stockGoal.Percentage / 100,
-                GoldGoal = targetInvestmentAmount * goldGoal.Percentage / 100,
-                BondGoal = targetInvestmentAmount * bondGoal.Percentage / 100,
-                StockGoalPercentage = stockGoal.Percentage,
-                GoldGoalPercentage = goldGoal.Percentage,
-                BondGoalPercentage = bondGoal.Percentage
+                AmountInvested = Convert.ToDecimal(shares.Select(e => e.NumOfCoins * e.PurchasePrice).Sum()),
+                CryptoGoal = targetInvestmentAmount * cryptoGoal.Percentage / 100,
+                CryptoPercentage = cryptoGoal.Percentage
             });
         }
 
@@ -294,7 +286,6 @@ namespace McGreggorFinancials.Controllers
 
         public ViewResult YearlyReport(DateTime? date)
         {
-
             if (date == null)
             {
                 date = DateTime.Now;
@@ -303,34 +294,35 @@ namespace McGreggorFinancials.Controllers
             IAvapiConnection connection = AvapiConnection.Instance;
             connection.Connect("Z9HHWNQMIHSAVDKH");
 
-            Int_TIME_SERIES_MONTHLY time_series_monthly = connection.GetQueryObject_TIME_SERIES_MONTHLY();
+            Int_DIGITAL_CURRENCY_MONTHLY time_series_monthly = connection.GetQueryObject_DIGITAL_CURRENCY_MONTHLY();
 
-            List<Share> shares = _repo.Shares.Where(e => e.Date.Year == date.Value.Year).ToList();
+            List<Coin> shares = _repo.Coins.Where(e => e.Date.Year == date.Value.Year).ToList();
             List<PieChartData> data = new List<PieChartData>();
-            List<StockViewModel> svm = new List<StockViewModel>();
-            List<Stock> stocks = _stockRepo.Stocks.ToList();
+            List<CryptoViewModel> svm = new List<CryptoViewModel>();
+            List<CryptoCurrency> stocks = _stockRepo.CryptoCurrencies.ToList();
 
-            Dictionary<int, IAvapiResponse_TIME_SERIES_MONTHLY> stockData = new Dictionary<int, IAvapiResponse_TIME_SERIES_MONTHLY>();
+            Dictionary<int, IAvapiResponse_DIGITAL_CURRENCY_MONTHLY> stockData = new Dictionary<int, IAvapiResponse_DIGITAL_CURRENCY_MONTHLY>();
 
             foreach (var stock in stocks)
             {
-                IAvapiResponse_TIME_SERIES_MONTHLY time_series_monthlyResponse = time_series_monthly.QueryPrimitive(
-                    stock.Ticker
+                IAvapiResponse_DIGITAL_CURRENCY_MONTHLY time_series_monthlyResponse = time_series_monthly.QueryPrimitive(
+                    stock.Ticker,
+                    "USD"
                     );
 
                 stockData.Add(stock.ID, time_series_monthlyResponse);
 
                 var sData = time_series_monthlyResponse.Data.TimeSeries.First();
 
-                List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
+                List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
+                int totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
 
-                svm.Add(new StockViewModel()
+                svm.Add(new CryptoViewModel()
                 {
-                    Stock = stock,
-                    TotalNumOfShares = totalShares,
-                    CurrentValue = Convert.ToDouble(sData.close),
-                    TotalValue = Convert.ToDouble(sData.close) * (double)totalShares
+                    Currency = stock,
+                    TotalNumOfCoins = totalShares,
+                    CurrentValue = Convert.ToDouble(sData.CloseUSD),
+                    TotalValue = Convert.ToDouble(sData.CloseUSD) * (double)totalShares
                 });
             }
 
@@ -346,15 +338,15 @@ namespace McGreggorFinancials.Controllers
                 double total = 0;
                 foreach (var stock in stocks)
                 {
-                    IAvapiResponse_TIME_SERIES_MONTHLY time_series_monthlyResponse = stockData.GetValueOrDefault(stock.ID);
+                    IAvapiResponse_DIGITAL_CURRENCY_MONTHLY time_series_monthlyResponse = stockData.GetValueOrDefault(stock.ID);
 
                     var sData = time_series_monthlyResponse.Data.TimeSeries.Where(x => Convert.ToDateTime(x.DateTime).Month == month
                         && Convert.ToDateTime(x.DateTime).Year == year).FirstOrDefault();
                     if (sData != null)
                     {
-                        List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID && e.Date.Month <= month).ToList();
-                        int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
-                        total += Convert.ToDouble(sData.close) * (double)totalShares;
+                        List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID && e.Date.Month <= month).ToList();
+                        int totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
+                        total += Convert.ToDouble(sData.Close) * (double)totalShares;
                     }
                 }
 
@@ -369,15 +361,15 @@ namespace McGreggorFinancials.Controllers
                 month++;
             }
 
-            List<int> sectors = _stockRepo.Stocks.Select(x => x.SectorID).Distinct().ToList();
+            List<int> sectors = _stockRepo.CryptoCurrencies.Select(x => x.ID).Distinct().ToList();
             foreach (var sector in sectors)
             {
-                List<Share> sectorShares = shares.Where(e => e.Date.Year == date.Value.Year ? (e.Date.Month <= date.Value.Month)
+                List<Coin> sectorShares = shares.Where(e => e.Date.Year == date.Value.Year ? (e.Date.Month <= date.Value.Month)
                     : e.Date.Year <= date.Value.Year).ToList();
-                int totalShares = sectorShares.Where(e => e.Stock.SectorID == sector).Select(e => e.NumOfShares).Sum();
+                int totalShares = sectorShares.Where(e => e.CryptoCurrency.ID == sector).Select(e => e.NumOfCoins).Sum();
                 data.Add(new PieChartData
                 {
-                    Category = _sectorRepo.Sectors.Where(x => x.ID == sector).FirstOrDefault().Name,
+                    Category = _stockRepo.CryptoCurrencies.Where(x => x.ID == sector).FirstOrDefault().Name,
                     Data = Convert.ToString(totalShares)
                 });
             }
@@ -385,7 +377,7 @@ namespace McGreggorFinancials.Controllers
             double amountInvested = 0;
             foreach (var s in shares)
             {
-                amountInvested += (double)s.PurchasePrice * (double)s.NumOfShares;
+                amountInvested += (double)s.PurchasePrice * (double)s.NumOfCoins;
             }
 
             List<IncomeEntry> incomes = _incomeRepo.IncomeEntries.Where(i => i.Date.Month == date.Value.Month && i.Date.Year == date.Value.Year).ToList();
@@ -397,13 +389,13 @@ namespace McGreggorFinancials.Controllers
                 sum += incomes.Where(i => i.Date.Day == j).Select(e => e.Amount).Sum();
             }
 
-            return View(new StockListViewModel
+            return View(new CryptoListViewModel
             {
                 Stocks = svm,
                 Date = date.Value,
                 PieChartData = data,
                 LineChartData = lineData,
-                AmountInvested = Convert.ToDecimal(shares.Select(e => e.NumOfShares * e.PurchasePrice).Sum())
+                AmountInvested = Convert.ToDecimal(shares.Select(e => e.NumOfCoins * e.PurchasePrice).Sum())
             });
         }
 
@@ -415,11 +407,10 @@ namespace McGreggorFinancials.Controllers
             return RedirectToAction("YearlyReport", new { date });
         }
 
-        public IActionResult SharesLog()
+        public IActionResult CoinLog()
         {
-            List<Share> shares = _repo.Shares.ToList();
+            List<Coin> shares = _repo.Coins.ToList();
             return View(shares);
         }
-
     }
 }

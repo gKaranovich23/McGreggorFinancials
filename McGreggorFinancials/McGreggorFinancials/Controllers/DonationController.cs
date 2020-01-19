@@ -10,6 +10,9 @@ using McGreggorFinancials.Models.Donations;
 using McGreggorFinancials.Models.Donations.Repository;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Expenses.Repositories;
+using McGreggorFinancials.Models.Income;
+using McGreggorFinancials.Models.Income.Repositories;
+using McGreggorFinancials.Models.Targets;
 using McGreggorFinancials.Models.Targets.Repositories;
 using McGreggorFinancials.ViewModels.Donations;
 using Microsoft.AspNetCore.Mvc;
@@ -27,10 +30,12 @@ namespace McGreggorFinancials.Controllers
         private IAccountRepository _saveRepo;
         private IPaymentMethodRepository _payRepo;
         private ICreditBalanceRepository _creditRepo;
+        private IIncomeEntryRespository _incomeRepo;
 
         public DonationController(IDonationRepository repo, ICharityRepository catRepo,
             ITargetAmountRepository goalRepo, ITargetTypeRepository goalTypeRepo, IAccountTypeRepository saveTypeRepo,
-            IAccountRepository saveRepo, IPaymentMethodRepository payRepo, ICreditBalanceRepository creditRepo)
+            IAccountRepository saveRepo, IPaymentMethodRepository payRepo, ICreditBalanceRepository creditRepo,
+            IIncomeEntryRespository incomeRepo)
         {
             _repo = repo;
             _catRepo = catRepo;
@@ -40,6 +45,7 @@ namespace McGreggorFinancials.Controllers
             _saveRepo = saveRepo;
             _payRepo = payRepo;
             _creditRepo = creditRepo;
+            _incomeRepo = incomeRepo;
         }
 
         public ViewResult Create()
@@ -160,6 +166,11 @@ namespace McGreggorFinancials.Controllers
                 });
             }
 
+            List<IncomeEntry> incomes = _incomeRepo.IncomeEntries.Where(i => i.Date.Month == date.Value.Month && i.Date.Year == date.Value.Year).ToList();
+
+            TargetAmount donationsGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Charity")).FirstOrDefault();
+            decimal targetDonationsAmount = Convert.ToDecimal(incomes.Select(i => i.Amount).Sum()) * donationsGoal.Percentage / 100;
+
             return View(new DonationsListViewModel
             {
                 Donations = donations,
@@ -167,7 +178,8 @@ namespace McGreggorFinancials.Controllers
                 PieChartData = data,
                 LineChartData = lineData,
                 Total = Convert.ToDecimal(donations.Select(e => e.Amount).Sum()),
-                Goal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Charity")).FirstOrDefault()
+                DonationsGoal = targetDonationsAmount,
+                DonationsPercentage = donationsGoal.Percentage
             });
         }
 
@@ -221,7 +233,6 @@ namespace McGreggorFinancials.Controllers
                 PieChartData = data,
                 LineChartData = lineData,
                 Total = Convert.ToDecimal(donations.Select(e => e.Amount).Sum()),
-                Goal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Charity")).FirstOrDefault()
             });
         }
 
@@ -275,7 +286,6 @@ namespace McGreggorFinancials.Controllers
                 PieChartData = data,
                 LineChartData = lineData,
                 Total = Convert.ToDecimal(donations.Select(e => e.Amount).Sum()),
-                Goal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Charity")).FirstOrDefault()
             });
         }
 

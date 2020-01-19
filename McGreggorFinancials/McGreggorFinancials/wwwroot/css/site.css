@@ -86,10 +86,6 @@ input[type='date'].form-control, input[type='time'].form-control, input[type='da
     margin-top: 100px;
 }
 
-.text-success {
-    color: #31c81f;
-}
-
 #dateStr {
     background-color: transparent;
     color: #fff;
@@ -110,4 +106,8 @@ input[type='date'].form-control, input[type='time'].form-control, input[type='da
 
 .table{
     color: #fff !important;
+}
+
+.btn-primary {
+    background-color: #3366cc !important;
 }

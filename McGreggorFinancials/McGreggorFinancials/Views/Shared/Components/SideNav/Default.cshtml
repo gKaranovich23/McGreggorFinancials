@@ -17,7 +17,7 @@
                 <ul>
                     @foreach(var link in module.Links)
                     {
-                        <li class="@(Model.CurrentAction.Equals(link.Action) && Model.CurrentController.Equals(module.Controller) ? "nvagiation__active" : "")">
+                        <li class="@(Model.CurrentAction.Equals(link.Action) && Model.CurrentController.Equals(module.Controller) ? "navigation__active" : "")">
                             <a asp-controller="@module.Controller" asp-action="@link.Action">@link.Name</a>
                         </li>
                     }

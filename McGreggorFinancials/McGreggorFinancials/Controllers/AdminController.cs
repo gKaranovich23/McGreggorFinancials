@@ -4,10 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using McGreggorFinancials.Models.Accounts;
 using McGreggorFinancials.Models.Accounts.Repositories;
+using McGreggorFinancials.Models.Crypto;
+using McGreggorFinancials.Models.Crypto.Repository;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Expenses.Repositories;
 using McGreggorFinancials.Models.Income;
 using McGreggorFinancials.Models.Income.Repositories;
+using McGreggorFinancials.Models.Stocks;
+using McGreggorFinancials.Models.Stocks.Repository;
 using McGreggorFinancials.Models.Targets;
 using McGreggorFinancials.Models.Targets.Repositories;
 using McGreggorFinancials.ViewModels.Admin;
@@ -26,10 +30,14 @@ namespace McGreggorFinancials.Controllers
         private IAccountTypeRepository _accountTypeRepo;
         private IPaymentMethodRepository _payRepo;
         private ICreditBalanceRepository _creditRepo;
+        private ISectorRepository _sectorRepo;
+        private IStockRepository _stockRepo;
+        private ICryptoCurrencyRepository _cryptoRepo;
 
         public AdminController(IIncomeCategoryRepository incomeCatRepo, IExpenseCategoryRepository expenseCatRepo,
             ITargetAmountRepository targetAmountRepo, ITargetTypeRepository targetTypeRepo, IAccountRepository accountRepo,
-            IAccountTypeRepository accountTypeRepo, IPaymentMethodRepository payRepo, ICreditBalanceRepository creditRepo)
+            IAccountTypeRepository accountTypeRepo, IPaymentMethodRepository payRepo, ICreditBalanceRepository creditRepo,
+            ISectorRepository sectorRepo, IStockRepository stockRepo, ICryptoCurrencyRepository cryptoRepo)
         {
             _incomeCatRepo = incomeCatRepo;
             _expenseCatRepo = expenseCatRepo;
@@ -39,6 +47,9 @@ namespace McGreggorFinancials.Controllers
             _accountTypeRepo = accountTypeRepo;
             _payRepo = payRepo;
             _creditRepo = creditRepo;
+            _sectorRepo = sectorRepo;
+            _stockRepo = stockRepo;
+            _cryptoRepo = cryptoRepo;
         }
 
         public ViewResult CreateIncomeCategory()
@@ -454,6 +465,159 @@ namespace McGreggorFinancials.Controllers
                 model.PaymentMethod = p;
                 return View(model);
             }
+        }
+
+        public ViewResult CreateSector()
+        {
+            ViewBag.FormTitle = "Create Sector";
+
+            return View("EditSector", new Sector());
+        }
+
+        public ViewResult EditSector(int id)
+        {
+            ViewBag.FormTitle = "Edit Sector";
+
+            Sector s = _sectorRepo.Sectors.Where(x => x.ID == id).FirstOrDefault();
+
+            return View(s);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditSector(Sector model)
+        {
+            if (ModelState.IsValid)
+            {
+                _sectorRepo.Save(model);
+                TempData["message"] = $"{model.Name} Sector has been saved";
+                return RedirectToAction("Sectors");
+            }
+            else
+            {
+                if (model.ID == 0)
+                {
+                    ViewBag.FormTitle = "Create Sector";
+                }
+                else
+                {
+                    ViewBag.FormTitle = "Edit Sector";
+                }
+
+                return View(model);
+            }
+        }
+
+        public ViewResult Sectors()
+        {
+            List<Sector> sectors = _sectorRepo.Sectors.ToList();
+
+            return View(sectors);
+        }
+
+        public ViewResult CreateStock()
+        {
+            ViewBag.FormTitle = "Create Stock";
+
+            return View("EditStock", new StockFormViewModel
+            {
+                Stock = new Stock(),
+                Sectors = new SelectList(_sectorRepo.Sectors.ToList(), "ID", "Name")
+            });
+        }
+
+        public ViewResult EditStock(int id)
+        {
+            ViewBag.FormTitle = "Edit Stock";
+
+            Stock s = _stockRepo.Stocks.Where(x => x.ID == id).FirstOrDefault();
+
+            return View(new StockFormViewModel
+            {
+                Stock = s,
+                Sectors = new SelectList(_sectorRepo.Sectors.ToList(), "ID", "Name")
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditStock(StockFormViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                _stockRepo.Save(model.Stock);
+                TempData["message"] = $"{model.Stock.Company} has been saved";
+                return RedirectToAction("Stocks");
+            }
+            else
+            {
+                if (model.Stock.ID == 0)
+                {
+                    ViewBag.FormTitle = "Create Stock";
+                }
+                else
+                {
+                    ViewBag.FormTitle = "Edit Stock";
+                }
+
+                model.Sectors = new SelectList(_sectorRepo.Sectors.ToList(), "ID", "Name");
+                return View(model);
+            }
+        }
+
+        public ViewResult Stocks()
+        {
+            List<Stock> stocks = _stockRepo.Stocks.ToList();
+
+            return View(stocks);
+        }
+
+        public ViewResult CreateCryptoCurrency()
+        {
+            ViewBag.FormTitle = "Create Sector";
+
+            return View("EditCryptoCurrency", new CryptoCurrency());
+        }
+
+        public ViewResult EditCryptoCurrency(int id)
+        {
+            ViewBag.FormTitle = "Edit CryptoCurrency";
+
+            CryptoCurrency s = _cryptoRepo.CryptoCurrencies.Where(x => x.ID == id).FirstOrDefault();
+
+            return View(s);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditCryptoCurrency(CryptoCurrency model)
+        {
+            if (ModelState.IsValid)
+            {
+                _cryptoRepo.Save(model);
+                TempData["message"] = $"{model.Name} CryptoCurrency has been saved";
+                return RedirectToAction("CryptoCurrencies");
+            }
+            else
+            {
+                if (model.ID == 0)
+                {
+                    ViewBag.FormTitle = "Create CryptoCurrency";
+                }
+                else
+                {
+                    ViewBag.FormTitle = "Edit CryptoCurrency";
+                }
+
+                return View(model);
+            }
+        }
+
+        public ViewResult CryptoCurrencies()
+        {
+            List<CryptoCurrency> crypto = _cryptoRepo.CryptoCurrencies.ToList();
+
+            return View(crypto);
         }
     }
 }

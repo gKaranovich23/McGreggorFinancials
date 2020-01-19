@@ -9,7 +9,7 @@ namespace McGreggorFinancials.Models.Navigation
     {
         public CryptoModule()
         {
-            Name = "Crypte";
+            Name = "Crypto";
             Controller = "Crypto";
             Links = new List<ModuleLink>
             {

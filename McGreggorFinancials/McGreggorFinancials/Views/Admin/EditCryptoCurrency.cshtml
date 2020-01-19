@@ -1,0 +1,32 @@
+﻿@model CryptoCurrency
+@{
+    ViewData["Title"] = "EditCryptoCurrency";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="content__title">
+    <h1>@ViewBag.FormTitle</h1>
+</header>
+<hr />
+<form asp-action="EditCryptoCurrency">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="ID" />
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Ticker" class="control-label"></label>
+        <input asp-for="Ticker" class="form-control" />
+        <span asp-validation-for="Ticker" class="text-danger"></span>
+    </div>
+    <div class="text-center">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="CryptoCurrencies" class="btn btn-default">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

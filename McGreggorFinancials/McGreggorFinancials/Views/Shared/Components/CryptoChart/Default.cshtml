@@ -1,9 +1,9 @@
 ﻿@model List<LineChartData>
 
-<div id="stock_chart"></div>
+<div id="crypto_chart"></div>
 
 <script type="text/javascript">
-    function drawStockChart() {
+    function drawCryptoChart() {
         var modelData = @Html.Raw(Json.Serialize(Model));
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Day');
@@ -38,7 +38,7 @@
             backgroundColor: 'transparent'
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('stock_chart'));
+        var chart = new google.visualization.LineChart(document.getElementById('crypto_chart'));
         chart.draw(data, options);
     }
 </script>

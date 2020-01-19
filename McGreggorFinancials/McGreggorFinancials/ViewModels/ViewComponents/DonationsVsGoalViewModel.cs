@@ -9,6 +9,6 @@ namespace McGreggorFinancials.ViewModels.ViewComponents
     public class DonationsVsGoalViewModel
     {
         public decimal DonationsTotal { get; set; }
-        public TargetAmount DonationsGoal { get; set; }
+        public decimal DonationsGoal { get; set; }
     }
 }

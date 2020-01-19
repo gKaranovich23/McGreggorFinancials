@@ -28,11 +28,6 @@ namespace McGreggorFinancials.ViewComponents
         {
             DateTime date = DateTime.Now;
 
-            IAvapiConnection connection = AvapiConnection.Instance;
-            connection.Connect("Z9HHWNQMIHSAVDKH");
-
-            Int_TIME_SERIES_DAILY time_series_daily = connection.GetQueryObject_TIME_SERIES_DAILY();
-
             List<Share> shares = _repo.Shares.Where(e => e.Date.Year == Convert.ToDateTime(date).Year ? (e.Date.Month == Convert.ToDateTime(date).Month ?
                 e.Date.Day <= Convert.ToDateTime(date).Day : e.Date.Month <= Convert.ToDateTime(date).Month) : e.Date.Year <= Convert.ToDateTime(date).Year).ToList();
 

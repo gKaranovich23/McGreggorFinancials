@@ -15,6 +15,28 @@
 
 <a asp-action="Create" class="btn btn-primary btn-add--expense">Add Donation</a>
 
+<div class="row quick-stats">
+    <div class="col-sm-6 col-md-6">
+        <div class="quick-stats__item">
+            <div class="quick-stats__info">
+                <h2>
+                    <span>$@Model.Total/$@(Model.DonationsGoal)</span>
+                </h2>
+                <small>Compared To Goal</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-6">
+        <div class="quick-stats__item">
+            <div class="quick-stats__info">
+                <h2>@Model.DonationsPercentage %       =>      $<span>@Model.DonationsGoal</span></h2>
+                <small>Gold Goal</small>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-sm-6">
         <div class="card card-lg">
@@ -107,18 +129,8 @@
                 ]);
             }
 
-            var lineColor = '';
-
-            if (@Model.Total >= @Model.Goal.Amount) {
-                lineColor = '#31c81f';
-            }
-            else {
-                lineColor = 'red';
-            }
-
             // Set chart options
             var options = {
-                colors: [lineColor],
                 backgroundColor: 'transparent',
                 hAxis: {
                     title: 'Day',

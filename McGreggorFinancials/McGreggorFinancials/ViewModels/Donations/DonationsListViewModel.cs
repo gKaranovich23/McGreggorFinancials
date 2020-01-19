@@ -15,6 +15,7 @@ namespace McGreggorFinancials.ViewModels.Donations
         public List<PieChartData> PieChartData { get; set; }
         public List<LineChartData> LineChartData { get; set; }
         public decimal Total { get; set; }
-        public TargetAmount Goal { get; set; }
+        public decimal DonationsGoal { get; set; }
+        public decimal DonationsPercentage { get; set; }
     }
 }

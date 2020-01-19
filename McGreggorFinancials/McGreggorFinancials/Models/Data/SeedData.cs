@@ -28,8 +28,12 @@ namespace McGreggorFinancials.Models.Data
                 context.TargetTypes.AddRange(
                     new TargetType { Name = "Expenses" },
                     new TargetType { Name = "Charity" },
-                    new TargetType { Name = "Stock" },
-                    new TargetType { Name = "Personal Savings" }
+                    new TargetType { Name = "Investments" },
+                    new TargetType { Name = "Personal Savings" },
+                    new TargetType { Name = "Stock"},
+                    new TargetType { Name = "Bond"},
+                    new TargetType { Name = "Gold"},
+                    new TargetType { Name = "Crypto"}
                 );
 
                 context.SaveChanges();
@@ -45,13 +49,33 @@ namespace McGreggorFinancials.Models.Data
                     },
                     new TargetAmount
                     {
-                        Amount = 100,
+                        Percentage = 10,
                         TypeID = context.TargetTypes.Where(g => g.Name.Equals("Charity")).First().ID
                     },
                     new TargetAmount
                     {
-                        Amount = 400,
+                        Percentage = 20,
+                        TypeID = context.TargetTypes.Where(g => g.Name.Equals("Investments")).First().ID
+                    },
+                    new TargetAmount
+                    {
+                        Percentage = 60,
                         TypeID = context.TargetTypes.Where(g => g.Name.Equals("Stock")).First().ID
+                    },
+                    new TargetAmount
+                    {
+                        Percentage = 10,
+                        TypeID = context.TargetTypes.Where(g => g.Name.Equals("Bond")).First().ID
+                    },
+                    new TargetAmount
+                    {
+                        Percentage = 20,
+                        TypeID = context.TargetTypes.Where(g => g.Name.Equals("Gold")).First().ID
+                    },
+                    new TargetAmount
+                    {
+                        Percentage = 10,
+                        TypeID = context.TargetTypes.Where(g => g.Name.Equals("Crypto")).First().ID
                     },
                     new TargetAmount
                     {
@@ -272,7 +296,12 @@ namespace McGreggorFinancials.Models.Data
             if(!context.Coins.Any())
             {
                 context.Coins.AddRange(
-                        new Coin { NumOfCoins = 10, PurchasePrice = 100, CryptoCurrencyID = context.CryptoCurrencies.Where(c => c.Name.Equals("Bitcoin")).First().ID }
+                        new Coin {
+                            NumOfCoins = 10,
+                            PurchasePrice = 100,
+                            CryptoCurrencyID = context.CryptoCurrencies.Where(c => c.Name.Equals("Bitcoin")).First().ID,
+                            Date = DateTime.Now
+                        }
                     );
 
                 context.SaveChanges();

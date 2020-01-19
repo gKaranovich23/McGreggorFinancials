@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using McGreggorFinancials.Models.Accounts.Repositories;
+using McGreggorFinancials.Models.Crypto.Repository;
 using McGreggorFinancials.Models.Data;
 using McGreggorFinancials.Models.Donations.Repository;
 using McGreggorFinancials.Models.Expenses.Repositories;
@@ -49,6 +50,8 @@ namespace McGreggorFinancials
             services.AddTransient<ISectorRepository, SectorRepository>();
             services.AddTransient<IStockRepository, StockRepository>();
             services.AddTransient<IShareRepository, ShareRepository>();
+            services.AddTransient<ICryptoCurrencyRepository, CryptoCurrencyRepository>();
+            services.AddTransient<ICoinRepository, CoinRepository>();
 
             services.AddDistributedMemoryCache();
 

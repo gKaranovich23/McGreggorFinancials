@@ -30,6 +30,16 @@ namespace McGreggorFinancials.Models.Navigation
                 },
                 new ModuleLink
                 {
+                    Action = "CryptoCurrencies",
+                    Name = "CryptoCurrencies"
+                },
+                new ModuleLink
+                {
+                    Action = "ExpenseCategories",
+                    Name = "Expense Categories"
+                },
+                new ModuleLink
+                {
                     Action = "IncomeCategories",
                     Name = "Income Categories"
                 },
@@ -40,8 +50,13 @@ namespace McGreggorFinancials.Models.Navigation
                 },
                 new ModuleLink
                 {
-                    Action = "ExpenseCategories",
-                    Name = "Expense Categories"
+                    Action = "Sectors",
+                    Name = "Sectors"
+                },
+                new ModuleLink
+                {
+                    Action = "Stocks",
+                    Name = "Stocks"
                 },
                 new ModuleLink
                 {
