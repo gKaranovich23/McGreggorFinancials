@@ -74,7 +74,7 @@ namespace McGreggorFinancials.ViewComponents
                         lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
                         lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
                         lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                        int totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
+                        decimal totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
                         double s = Convert.ToDouble(cryptoData.GetValueOrDefault(sData));
                         double stockValue = s * (double)totalShares;
                         total += stockValue;

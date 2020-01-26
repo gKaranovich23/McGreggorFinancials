@@ -79,13 +79,13 @@ namespace McGreggorFinancials.Controllers
 
                 if (model.Coin.ID == 0)
                 {
-                    account.Amount = (double)account.Amount - (model.Coin.PurchasePrice * model.Coin.NumOfCoins);
+                    account.Amount = (double)account.Amount - (model.Coin.PurchasePrice * (double)model.Coin.NumOfCoins);
                 }
                 else
                 {
                     Coin s = _repo.Coins.Where(x => x.ID == model.Coin.ID).FirstOrDefault();
-                    account.Amount = (double)account.Amount + (s.PurchasePrice * s.NumOfCoins);
-                    account.Amount = (double)account.Amount - (model.Coin.PurchasePrice * model.Coin.NumOfCoins);
+                    account.Amount = (double)account.Amount + (s.PurchasePrice * (double)s.NumOfCoins);
+                    account.Amount = (double)account.Amount - (model.Coin.PurchasePrice * (double)model.Coin.NumOfCoins);
                 }
 
                 _repo.Save(model.Coin);
@@ -129,7 +129,7 @@ namespace McGreggorFinancials.Controllers
             if (ModelState.IsValid)
             {
                 Account account = _saveRepo.Accounts.Where(x => x.TypeID == _saveTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
-                account.Amount = (double)account.Amount + (model.Coin.PurchasePrice * model.Coin.NumOfCoins);
+                account.Amount = (double)account.Amount + (model.Coin.PurchasePrice * (double)model.Coin.NumOfCoins);
 
                 model.Coin.NumOfCoins = -model.Coin.NumOfCoins;
                 _repo.Save(model.Coin);
@@ -167,7 +167,7 @@ namespace McGreggorFinancials.Controllers
                 var sData = stockData.First();
 
                 List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
+                decimal totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
 
                 svm.Add(new CryptoViewModel()
                 {
@@ -219,7 +219,7 @@ namespace McGreggorFinancials.Controllers
                         lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
                         lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
                         lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                        int totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
+                        decimal totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
                         double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
                         double stockValue = s * (double)totalShares;
                         total += stockValue;
@@ -242,7 +242,7 @@ namespace McGreggorFinancials.Controllers
             {
                 List<Coin> sectorShares = shares.Where(e => e.Date.Year == currentDate.Year ? (e.Date.Month == currentDate.Month
                     ? e.Date.Day <= currentDate.Day : e.Date.Month <= currentDate.Month) : e.Date.Year <= currentDate.Year).ToList();
-                int totalShares = sectorShares.Where(e => e.CryptoCurrency.ID == sector).Select(e => e.NumOfCoins).Sum();
+                decimal totalShares = sectorShares.Where(e => e.CryptoCurrency.ID == sector).Select(e => e.NumOfCoins).Sum();
                 data.Add(new PieChartData
                 {
                     Category = _stockRepo.CryptoCurrencies.Where(x => x.ID == sector).FirstOrDefault().Name,
@@ -270,7 +270,7 @@ namespace McGreggorFinancials.Controllers
                 Date = date.Value,
                 PieChartData = data,
                 LineChartData = lineData,
-                AmountInvested = Convert.ToDecimal(shares.Select(e => e.NumOfCoins * e.PurchasePrice).Sum()),
+                AmountInvested = Convert.ToDecimal(shares.Select(e => (double)e.NumOfCoins * e.PurchasePrice).Sum()),
                 CryptoGoal = targetInvestmentAmount * cryptoGoal.Percentage / 100,
                 CryptoPercentage = cryptoGoal.Percentage
             });
@@ -315,7 +315,7 @@ namespace McGreggorFinancials.Controllers
                 var sData = time_series_monthlyResponse.Data.TimeSeries.First();
 
                 List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
+                decimal totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
 
                 svm.Add(new CryptoViewModel()
                 {
@@ -345,7 +345,7 @@ namespace McGreggorFinancials.Controllers
                     if (sData != null)
                     {
                         List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID && e.Date.Month <= month).ToList();
-                        int totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
+                        decimal totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
                         total += Convert.ToDouble(sData.Close) * (double)totalShares;
                     }
                 }
@@ -366,7 +366,7 @@ namespace McGreggorFinancials.Controllers
             {
                 List<Coin> sectorShares = shares.Where(e => e.Date.Year == date.Value.Year ? (e.Date.Month <= date.Value.Month)
                     : e.Date.Year <= date.Value.Year).ToList();
-                int totalShares = sectorShares.Where(e => e.CryptoCurrency.ID == sector).Select(e => e.NumOfCoins).Sum();
+                decimal totalShares = sectorShares.Where(e => e.CryptoCurrency.ID == sector).Select(e => e.NumOfCoins).Sum();
                 data.Add(new PieChartData
                 {
                     Category = _stockRepo.CryptoCurrencies.Where(x => x.ID == sector).FirstOrDefault().Name,
@@ -395,7 +395,7 @@ namespace McGreggorFinancials.Controllers
                 Date = date.Value,
                 PieChartData = data,
                 LineChartData = lineData,
-                AmountInvested = Convert.ToDecimal(shares.Select(e => e.NumOfCoins * e.PurchasePrice).Sum())
+                AmountInvested = Convert.ToDecimal(shares.Select(e => (double)e.NumOfCoins * e.PurchasePrice).Sum())
             });
         }
 

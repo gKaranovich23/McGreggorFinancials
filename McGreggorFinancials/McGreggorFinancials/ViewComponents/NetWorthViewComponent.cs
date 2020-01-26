@@ -74,7 +74,7 @@ namespace McGreggorFinancials.ViewComponents
                 var sData = cryptoData.First();
 
                 List<Coin> coinList = coins.Where(e => e.CryptoCurrencyID == crypto.ID).ToList();
-                int totalCoins = coinList.Select(e => e.NumOfCoins).Sum();
+                decimal totalCoins = coinList.Select(e => e.NumOfCoins).Sum();
                 netWorth += Convert.ToDouble(sData.Value) * (double)totalCoins;
             }
 

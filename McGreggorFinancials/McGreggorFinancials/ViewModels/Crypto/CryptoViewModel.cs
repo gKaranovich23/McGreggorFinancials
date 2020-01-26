@@ -10,7 +10,7 @@ namespace McGreggorFinancials.ViewModels.Crypto
     {
         public CryptoCurrency Currency { get; set; }
         public double CurrentValue { get; set; }
-        public int TotalNumOfCoins { get; set; }
+        public decimal TotalNumOfCoins { get; set; }
         public double TotalValue { get; set; }
     }
 }

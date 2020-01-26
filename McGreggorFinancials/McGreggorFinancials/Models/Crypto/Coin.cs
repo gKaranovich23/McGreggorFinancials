@@ -12,7 +12,7 @@ namespace McGreggorFinancials.Models.Crypto
         public int ID { get; set; }
 
         [Required]
-        public int NumOfCoins { get; set; }
+        public decimal NumOfCoins { get; set; }
 
         [Required]
         public double PurchasePrice { get; set; }

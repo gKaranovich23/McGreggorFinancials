@@ -40,7 +40,7 @@ namespace McGreggorFinancials.ViewComponents
                 var sData = stockData.First();
 
                 List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
+                decimal totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
 
                 svm.Add(new CryptoViewModel()
                 {
