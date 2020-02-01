@@ -268,11 +268,14 @@ namespace McGreggorFinancials.Controllers
         {
             ViewBag.FormTitle = "Edit Account";
 
+            Account a = _accountRepo.Accounts.FirstOrDefault(e => e.ID == id);
+
             return View(new AccountFormViewModel
             {
-                Account = _accountRepo.Accounts.FirstOrDefault(e => e.ID == id),
+                Account = a,
                 AccountTypes = new SelectList(_accountTypeRepo.AccountTypes.ToList(), "ID", "Name"),
-                TargetTypes = new SelectList(_targetTypeRepo.TargetTypes.ToList(), "ID", "Name")
+                TargetTypes = new SelectList(_targetTypeRepo.TargetTypes.ToList(), "ID", "Name"),
+                SelectedTarget = _targetAmountRepo.TargetAmounts.Where(x => x.ID == a.TargetID).First().TypeID
             });
         }
 
@@ -282,6 +285,7 @@ namespace McGreggorFinancials.Controllers
         {
             if (ModelState.IsValid)
             {
+                model.Account.TargetID = _targetAmountRepo.TargetAmounts.Where(x => x.TypeID == model.SelectedTarget).First().ID;
                 _accountRepo.Save(model.Account);
                 TempData["message"] = $"Account #{model.Account.ID} has been saved";
                 return RedirectToAction("Accounts");
