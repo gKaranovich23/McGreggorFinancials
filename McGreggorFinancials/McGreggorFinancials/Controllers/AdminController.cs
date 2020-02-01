@@ -256,7 +256,7 @@ namespace McGreggorFinancials.Controllers
         {
             ViewBag.FormTitle = "Create Account";
 
-            return View("EditSavings", new AccountFormViewModel
+            return View("EditAccount", new AccountFormViewModel
             {
                 Account = new Account(),
                 AccountTypes = new SelectList(_accountTypeRepo.AccountTypes.ToList(), "ID", "Name"),
