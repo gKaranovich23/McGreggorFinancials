@@ -282,10 +282,9 @@ namespace McGreggorFinancials.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.Account.TargetID = _accountRepo.Accounts.Where(x => x.TargetID == model.SelectedTarget).First().ID;
                 _accountRepo.Save(model.Account);
                 TempData["message"] = $"Account #{model.Account.ID} has been saved";
-                return RedirectToAction("MonthlyReport");
+                return RedirectToAction("Accounts");
             }
             else
             {

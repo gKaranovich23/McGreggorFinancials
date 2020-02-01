@@ -111,3 +111,13 @@ input[type='date'].form-control, input[type='time'].form-control, input[type='da
 .btn-primary {
     background-color: #3366cc !important;
 }
+
+select {
+    background-clip: padding-box;
+    border: 0 solid transparent;
+    border-radius: 2px
+}
+
+select > option {
+    background-color: rgba(0,0,0,.96);
+}

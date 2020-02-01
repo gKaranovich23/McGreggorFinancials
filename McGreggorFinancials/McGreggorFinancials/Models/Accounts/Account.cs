@@ -11,7 +11,6 @@ namespace McGreggorFinancials.Models.Accounts
     public class Account
     {
         public int ID { get; set; }
-        public string Description { get; set; }
 
         [Required]
         public double Amount { get; set; }
