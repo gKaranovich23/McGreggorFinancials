@@ -12,17 +12,10 @@ namespace McGreggorFinancials.ViewComponents
     public class SavingsViewComponent : ViewComponent
     {
         private IAccountRepository _repo;
-        private IAccountTypeRepository _typeRepo;
-        private ITargetAmountRepository _goalRepo;
-        private readonly ITargetTypeRepository _goalTypeRepo;
 
-        public SavingsViewComponent(IAccountRepository repo, IAccountTypeRepository typeRepo,
-            ITargetAmountRepository goalRepo, ITargetTypeRepository goalTypeRepo)
+        public SavingsViewComponent(IAccountRepository repo)
         {
             _repo = repo;
-            _typeRepo = typeRepo;
-            _goalRepo = goalRepo;
-            _goalTypeRepo = goalTypeRepo;
         }
 
         public IViewComponentResult Invoke()
