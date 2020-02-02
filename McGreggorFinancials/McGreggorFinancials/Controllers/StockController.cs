@@ -222,6 +222,11 @@ namespace McGreggorFinancials.Controllers
                     var sData = stockData.Keys.Where(x => Convert.ToDateTime(x).Day == valueDate.Day &&
                          Convert.ToDateTime(x).Month == valueDate.Month && Convert.ToDateTime(x).Year == valueDate.Year).FirstOrDefault();
 
+                    if(sData == DateTime.MinValue)
+                    {
+                        sData = stockData.Keys.First();
+                    }
+
                     if (sData != null && sData != DateTime.MinValue)
                     {
                         List<Share> lineDataShares = shares.Where(e => e.StockID == stock.ID).ToList();
