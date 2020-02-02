@@ -62,22 +62,29 @@ namespace McGreggorFinancials.ViewComponents
 
                 foreach (var crypto in cryptos)
                 {
-                    Dictionary<DateTime, double> cryptoData =
-                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(crypto.Ticker));
-
-                    var sData = cryptoData.Keys.Where(x => Convert.ToDateTime(x).Day == valueDate.Day &&
-                         Convert.ToDateTime(x).Month == valueDate.Month && Convert.ToDateTime(x).Year == valueDate.Year).FirstOrDefault();
-
-                    if (sData != null && sData != DateTime.MinValue)
+                    try
                     {
-                        List<Coin> lineDataShares = coins.Where(e => e.CryptoCurrencyID == crypto.ID).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                        decimal totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
-                        double s = Convert.ToDouble(cryptoData.GetValueOrDefault(sData));
-                        double stockValue = s * (double)totalShares;
-                        total += stockValue;
+                        Dictionary<DateTime, double> cryptoData =
+                            JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(crypto.Ticker));
+
+                        var sData = cryptoData.Keys.Where(x => Convert.ToDateTime(x).Day == valueDate.Day &&
+                             Convert.ToDateTime(x).Month == valueDate.Month && Convert.ToDateTime(x).Year == valueDate.Year).FirstOrDefault();
+
+                        if (sData != null && sData != DateTime.MinValue)
+                        {
+                            List<Coin> lineDataShares = coins.Where(e => e.CryptoCurrencyID == crypto.ID).ToList();
+                            lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
+                            lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
+                            lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
+                            decimal totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
+                            double s = Convert.ToDouble(cryptoData.GetValueOrDefault(sData));
+                            double stockValue = s * (double)totalShares;
+                            total += stockValue;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+
                     }
                 }
 

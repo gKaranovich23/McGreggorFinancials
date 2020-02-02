@@ -34,21 +34,28 @@ namespace McGreggorFinancials.ViewComponents
 
             foreach (var stock in stocks)
             {
-                Dictionary<DateTime, double> stockData =
-                    JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
-
-                var sData = stockData.First();
-
-                List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
-                decimal totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
-
-                svm.Add(new CryptoViewModel()
+                try
                 {
-                    Currency = stock,
-                    TotalNumOfCoins = totalShares,
-                    CurrentValue = Convert.ToDouble(sData.Value),
-                    TotalValue = Convert.ToDouble(sData.Value) * (double)totalShares
-                });
+                    Dictionary<DateTime, double> stockData =
+                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
+
+                    var sData = stockData.First();
+
+                    List<Coin> listOfShares = shares.Where(e => e.CryptoCurrencyID == stock.ID).ToList();
+                    decimal totalShares = listOfShares.Select(e => e.NumOfCoins).Sum();
+
+                    svm.Add(new CryptoViewModel()
+                    {
+                        Currency = stock,
+                        TotalNumOfCoins = totalShares,
+                        CurrentValue = Convert.ToDouble(sData.Value),
+                        TotalValue = Convert.ToDouble(sData.Value) * (double)totalShares
+                    });
+                }
+                catch (Exception e)
+                {
+
+                }
             }
 
             return View(svm);

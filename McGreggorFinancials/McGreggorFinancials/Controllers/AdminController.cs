@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Avapi;
+using Avapi.AvapiTIME_SERIES_DAILY;
 using McGreggorFinancials.Models.Accounts;
 using McGreggorFinancials.Models.Accounts.Repositories;
 using McGreggorFinancials.Models.Crypto;
@@ -15,8 +17,10 @@ using McGreggorFinancials.Models.Stocks.Repository;
 using McGreggorFinancials.Models.Targets;
 using McGreggorFinancials.Models.Targets.Repositories;
 using McGreggorFinancials.ViewModels.Admin;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 
 namespace McGreggorFinancials.Controllers
 {
@@ -550,6 +554,37 @@ namespace McGreggorFinancials.Controllers
             {
                 _stockRepo.Save(model.Stock);
                 TempData["message"] = $"{model.Stock.Company} has been saved";
+
+                if(model.Stock.ID == 0)
+                {
+                    IAvapiConnection connection = AvapiConnection.Instance;
+                    connection.Connect("BXGO930UI9P053HT");
+
+                    Int_TIME_SERIES_DAILY time_series_daily = connection.GetQueryObject_TIME_SERIES_DAILY();
+
+                    try
+                    {
+                        IAvapiResponse_TIME_SERIES_DAILY time_series_dailyResponse = time_series_daily.Query(
+                        model.Stock.Ticker,
+                        Const_TIME_SERIES_DAILY.TIME_SERIES_DAILY_outputsize.compact
+                        );
+
+                        Dictionary<DateTime, double> stockData = new Dictionary<DateTime, double>();
+
+                        foreach (var d in time_series_dailyResponse.Data.TimeSeries)
+                        {
+                            stockData.Add(Convert.ToDateTime(d.DateTime), Convert.ToDouble(d.open ?? d.close));
+                        }
+
+                        string stockDataString = JsonConvert.SerializeObject(stockData);
+                        HttpContext.Session.SetString(model.Stock.Ticker, stockDataString);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+
                 return RedirectToAction("Stocks");
             }
             else

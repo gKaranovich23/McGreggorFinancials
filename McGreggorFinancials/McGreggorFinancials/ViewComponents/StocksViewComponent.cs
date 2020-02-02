@@ -34,21 +34,28 @@ namespace McGreggorFinancials.ViewComponents
 
             foreach (var stock in stocks)
             {
-                Dictionary<DateTime, double> stockData =
-                    JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
-
-                var sData = stockData.First();
-
-                List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
-
-                svm.Add(new StockViewModel()
+                try
                 {
-                    Stock = stock,
-                    TotalNumOfShares = totalShares,
-                    CurrentValue = Convert.ToDouble(sData.Value),
-                    TotalValue = Convert.ToDouble(sData.Value) * (double)totalShares
-                });
+                    Dictionary<DateTime, double> stockData =
+                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
+
+                    var sData = stockData.First();
+
+                    List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
+                    int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
+
+                    svm.Add(new StockViewModel()
+                    {
+                        Stock = stock,
+                        TotalNumOfShares = totalShares,
+                        CurrentValue = Convert.ToDouble(sData.Value),
+                        TotalValue = Convert.ToDouble(sData.Value) * (double)totalShares
+                    });
+                }
+                catch (Exception e)
+                {
+
+                }
             }
 
             return View(svm);

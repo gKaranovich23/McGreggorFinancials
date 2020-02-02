@@ -163,21 +163,28 @@ namespace McGreggorFinancials.Controllers
 
             foreach (var stock in stocks)
             {
-                Dictionary<DateTime, double> stockData =
-                    JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
-
-                var sData = stockData.First();
-
-                List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
-
-                svm.Add(new StockViewModel()
+                try
                 {
-                    Stock = stock,
-                    TotalNumOfShares = totalShares,
-                    CurrentValue = Convert.ToDouble(sData.Value),
-                    TotalValue = Convert.ToDouble(sData.Value) * (double)totalShares
-                });
+                    Dictionary<DateTime, double> stockData =
+                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
+
+                    var sData = stockData.First();
+
+                    List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
+                    int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
+
+                    svm.Add(new StockViewModel()
+                    {
+                        Stock = stock,
+                        TotalNumOfShares = totalShares,
+                        CurrentValue = Convert.ToDouble(sData.Value),
+                        TotalValue = Convert.ToDouble(sData.Value) * (double)totalShares
+                    });
+                }
+                catch (Exception e)
+                {
+
+                }
             }
 
             List<LineChartData> lineData = new List<LineChartData>();
@@ -301,7 +308,7 @@ namespace McGreggorFinancials.Controllers
             }
 
             IAvapiConnection connection = AvapiConnection.Instance;
-            connection.Connect("Z9HHWNQMIHSAVDKH");
+            connection.Connect("BXGO930UI9P053HT");
 
             Int_TIME_SERIES_MONTHLY time_series_monthly = connection.GetQueryObject_TIME_SERIES_MONTHLY();
 
@@ -314,24 +321,31 @@ namespace McGreggorFinancials.Controllers
 
             foreach (var stock in stocks)
             {
-                IAvapiResponse_TIME_SERIES_MONTHLY time_series_monthlyResponse = time_series_monthly.QueryPrimitive(
+                try
+                {
+                    IAvapiResponse_TIME_SERIES_MONTHLY time_series_monthlyResponse = time_series_monthly.QueryPrimitive(
                     stock.Ticker
                     );
 
-                stockData.Add(stock.ID, time_series_monthlyResponse);
+                    stockData.Add(stock.ID, time_series_monthlyResponse);
 
-                var sData = time_series_monthlyResponse.Data.TimeSeries.First();
+                    var sData = time_series_monthlyResponse.Data.TimeSeries.First();
 
-                List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
+                    List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
+                    int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
 
-                svm.Add(new StockViewModel()
+                    svm.Add(new StockViewModel()
+                    {
+                        Stock = stock,
+                        TotalNumOfShares = totalShares,
+                        CurrentValue = Convert.ToDouble(sData.close),
+                        TotalValue = Convert.ToDouble(sData.close) * (double)totalShares
+                    });
+                }
+                catch (Exception e)
                 {
-                    Stock = stock,
-                    TotalNumOfShares = totalShares,
-                    CurrentValue = Convert.ToDouble(sData.close),
-                    TotalValue = Convert.ToDouble(sData.close) * (double)totalShares
-                });
+
+                }
             }
 
             List<LineChartData> lineData = new List<LineChartData>();

@@ -32,7 +32,7 @@ namespace McGreggorFinancials.Controllers
             if (string.IsNullOrEmpty(investmentDataRetrieved))
             {
                 IAvapiConnection connection = AvapiConnection.Instance;
-                connection.Connect("Z9HHWNQMIHSAVDKH");
+                connection.Connect("BXGO930UI9P053HT");
 
                 string stockDataRetrieved = HttpContext.Session.GetString("StockDataRetrieved");
                 if(string.IsNullOrEmpty(stockDataRetrieved))
@@ -60,20 +60,27 @@ namespace McGreggorFinancials.Controllers
 
             foreach (var stock in stocks)
             {
-                IAvapiResponse_TIME_SERIES_DAILY time_series_dailyResponse = time_series_daily.Query(
+                try
+                {
+                    IAvapiResponse_TIME_SERIES_DAILY time_series_dailyResponse = time_series_daily.Query(
                     stock.Ticker,
                     Const_TIME_SERIES_DAILY.TIME_SERIES_DAILY_outputsize.compact
                     );
 
-                Dictionary<DateTime, double> stockData = new Dictionary<DateTime, double>();
+                    Dictionary<DateTime, double> stockData = new Dictionary<DateTime, double>();
 
-                foreach (var d in time_series_dailyResponse.Data.TimeSeries)
-                {
-                    stockData.Add(Convert.ToDateTime(d.DateTime), Convert.ToDouble(d.open ?? d.close));
+                    foreach (var d in time_series_dailyResponse.Data.TimeSeries)
+                    {
+                        stockData.Add(Convert.ToDateTime(d.DateTime), Convert.ToDouble(d.open ?? d.close));
+                    }
+
+                    string stockDataString = JsonConvert.SerializeObject(stockData);
+                    HttpContext.Session.SetString(stock.Ticker, stockDataString);
                 }
+                catch(Exception e)
+                {
 
-                string stockDataString = JsonConvert.SerializeObject(stockData);
-                HttpContext.Session.SetString(stock.Ticker, stockDataString);
+                }
 
             }
 
@@ -88,20 +95,27 @@ namespace McGreggorFinancials.Controllers
 
             foreach (var stock in stocks)
             {
-                IAvapiResponse_DIGITAL_CURRENCY_DAILY time_series_dailyResponse = time_series_daily.QueryPrimitive(
-                    stock.Ticker,
-                    "USD"
+                try
+                {
+                    IAvapiResponse_DIGITAL_CURRENCY_DAILY time_series_dailyResponse = time_series_daily.QueryPrimitive(
+                        stock.Ticker,
+                        "USD"
                     );
 
-                Dictionary<DateTime, double> stockData = new Dictionary<DateTime, double>();
+                    Dictionary<DateTime, double> stockData = new Dictionary<DateTime, double>();
 
-                foreach (var d in time_series_dailyResponse.Data.TimeSeries)
-                {
-                    stockData.Add(Convert.ToDateTime(d.DateTime), Convert.ToDouble(d.OpenUSD ?? d.CloseUSD));
+                    foreach (var d in time_series_dailyResponse.Data.TimeSeries)
+                    {
+                        stockData.Add(Convert.ToDateTime(d.DateTime), Convert.ToDouble(d.OpenUSD ?? d.CloseUSD));
+                    }
+
+                    string stockDataString = JsonConvert.SerializeObject(stockData);
+                    HttpContext.Session.SetString(stock.Ticker, stockDataString);
                 }
+                catch(Exception e)
+                {
 
-                string stockDataString = JsonConvert.SerializeObject(stockData);
-                HttpContext.Session.SetString(stock.Ticker, stockDataString);
+                }
 
             }
 

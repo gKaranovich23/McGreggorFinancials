@@ -62,22 +62,29 @@ namespace McGreggorFinancials.ViewComponents
 
                 foreach (var stock in stocks)
                 {
-                    Dictionary<DateTime, double> stockData =
-                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
-
-                    var sData = stockData.Keys.Where(x => Convert.ToDateTime(x).Day == valueDate.Day &&
-                         Convert.ToDateTime(x).Month == valueDate.Month && Convert.ToDateTime(x).Year == valueDate.Year).FirstOrDefault();
-
-                    if (sData != null && sData != DateTime.MinValue)
+                    try
                     {
-                        List<Share> lineDataShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                        int totalShares = lineDataShares.Select(e => e.NumOfShares).Sum();
-                        double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
-                        double stockValue = s * (double)totalShares;
-                        total += stockValue;
+                        Dictionary<DateTime, double> stockData =
+                            JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
+
+                        var sData = stockData.Keys.Where(x => Convert.ToDateTime(x).Day == valueDate.Day &&
+                             Convert.ToDateTime(x).Month == valueDate.Month && Convert.ToDateTime(x).Year == valueDate.Year).FirstOrDefault();
+
+                        if (sData != null && sData != DateTime.MinValue)
+                        {
+                            List<Share> lineDataShares = shares.Where(e => e.StockID == stock.ID).ToList();
+                            lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
+                            lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
+                            lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
+                            int totalShares = lineDataShares.Select(e => e.NumOfShares).Sum();
+                            double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
+                            double stockValue = s * (double)totalShares;
+                            total += stockValue;
+                        }
+                    }
+                    catch(Exception e)
+                    {
+
                     }
                 }
 

@@ -43,22 +43,29 @@ namespace McGreggorFinancials.ViewComponents
             netWorth -= _payRepo.PaymentMethods.Where(x => x.IsCredit).Sum(x => x.CreditBalance.Amount);
 
             IAvapiConnection connection = AvapiConnection.Instance;
-            connection.Connect("Z9HHWNQMIHSAVDKH");
+            connection.Connect("BXGO930UI9P053HT");
 
             Int_TIME_SERIES_DAILY time_series_daily = connection.GetQueryObject_TIME_SERIES_DAILY();
             List<Share> shares = _sharesRepo.Shares.ToList();
             List<Stock> stocks = _stockRepo.Stocks.ToList();
 
-            foreach (var stock in stocks)
+            try
             {
-                Dictionary<DateTime, double> stockData =
-                    JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
+                foreach (var stock in stocks)
+                {
+                    Dictionary<DateTime, double> stockData =
+                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(stock.Ticker));
 
-                var sData = stockData.First();
+                    var sData = stockData.First();
 
-                List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
-                netWorth += Convert.ToDouble(sData.Value) * (double)totalShares;
+                    List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID).ToList();
+                    int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
+                    netWorth += Convert.ToDouble(sData.Value) * (double)totalShares;
+                }
+            }
+            catch(Exception e)
+            {
+
             }
 
             Int_DIGITAL_CURRENCY_DAILY crypto_series_daily = connection.GetQueryObject_DIGITAL_CURRENCY_DAILY();
@@ -66,16 +73,23 @@ namespace McGreggorFinancials.ViewComponents
             List<CryptoCurrency> cryptos = _cryptoRepo.CryptoCurrencies.ToList();
             List<Coin> coins = _coinRepo.Coins.ToList();
 
-            foreach (var crypto in cryptos)
+            try
             {
-                Dictionary<DateTime, double> cryptoData =
-                    JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(crypto.Ticker));
+                foreach (var crypto in cryptos)
+                {
+                    Dictionary<DateTime, double> cryptoData =
+                        JsonConvert.DeserializeObject<Dictionary<DateTime, double>>(HttpContext.Session.GetString(crypto.Ticker));
 
-                var sData = cryptoData.First();
+                    var sData = cryptoData.First();
 
-                List<Coin> coinList = coins.Where(e => e.CryptoCurrencyID == crypto.ID).ToList();
-                decimal totalCoins = coinList.Select(e => e.NumOfCoins).Sum();
-                netWorth += Convert.ToDouble(sData.Value) * (double)totalCoins;
+                    List<Coin> coinList = coins.Where(e => e.CryptoCurrencyID == crypto.ID).ToList();
+                    decimal totalCoins = coinList.Select(e => e.NumOfCoins).Sum();
+                    netWorth += Convert.ToDouble(sData.Value) * (double)totalCoins;
+                }
+            }
+            catch (Exception e)
+            {
+
             }
 
             return View(netWorth);
