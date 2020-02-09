@@ -22,7 +22,7 @@ namespace McGreggorFinancials.ViewComponents
         {
             DateTime date = DateTime.Now;
 
-            List<Account> savings = _repo.Accounts.ToList();
+            List<Account> savings = _repo.Accounts.Where(x => x.Type.Name.Equals("Personal")).ToList();
 
             return View(savings.Select(x => x.Amount).Sum());
         }

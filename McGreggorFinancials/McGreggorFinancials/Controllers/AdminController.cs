@@ -8,6 +8,8 @@ using McGreggorFinancials.Models.Accounts;
 using McGreggorFinancials.Models.Accounts.Repositories;
 using McGreggorFinancials.Models.Crypto;
 using McGreggorFinancials.Models.Crypto.Repository;
+using McGreggorFinancials.Models.Donations;
+using McGreggorFinancials.Models.Donations.Repository;
 using McGreggorFinancials.Models.Expenses;
 using McGreggorFinancials.Models.Expenses.Repositories;
 using McGreggorFinancials.Models.Income;
@@ -37,11 +39,13 @@ namespace McGreggorFinancials.Controllers
         private ISectorRepository _sectorRepo;
         private IStockRepository _stockRepo;
         private ICryptoCurrencyRepository _cryptoRepo;
+        private ICharityRepository _charCatRepo;
 
         public AdminController(IIncomeCategoryRepository incomeCatRepo, IExpenseCategoryRepository expenseCatRepo,
             ITargetAmountRepository targetAmountRepo, ITargetTypeRepository targetTypeRepo, IAccountRepository accountRepo,
             IAccountTypeRepository accountTypeRepo, IPaymentMethodRepository payRepo, ICreditBalanceRepository creditRepo,
-            ISectorRepository sectorRepo, IStockRepository stockRepo, ICryptoCurrencyRepository cryptoRepo)
+            ISectorRepository sectorRepo, IStockRepository stockRepo, ICryptoCurrencyRepository cryptoRepo,
+            ICharityRepository charCatRepo)
         {
             _incomeCatRepo = incomeCatRepo;
             _expenseCatRepo = expenseCatRepo;
@@ -54,6 +58,7 @@ namespace McGreggorFinancials.Controllers
             _sectorRepo = sectorRepo;
             _stockRepo = stockRepo;
             _cryptoRepo = cryptoRepo;
+            _charCatRepo = charCatRepo;
         }
 
         public ViewResult CreateIncomeCategory()
@@ -656,6 +661,55 @@ namespace McGreggorFinancials.Controllers
             List<CryptoCurrency> crypto = _cryptoRepo.CryptoCurrencies.ToList();
 
             return View(crypto);
+        }
+
+        public ViewResult CreateCharity()
+        {
+            ViewBag.FormTitle = "Create Charity";
+
+            return View("EditCharity", new Charity());
+        }
+
+        public ViewResult EditCharity(int id)
+        {
+            ViewBag.FormTitle = "Edit Charity";
+
+            Charity c = _charCatRepo.Charities.Where(x => x.ID == id).FirstOrDefault();
+
+            return View(c);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditCharity(Charity model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                _charCatRepo.Save(model);
+                TempData["message"] = $"{model.Name} has been saved";
+                return RedirectToAction("Charities");
+            }
+            else
+            {
+                if (model.ID == 0)
+                {
+                    ViewBag.FormTitle = "Create Charity";
+                }
+                else
+                {
+                    ViewBag.FormTitle = "Edit Charity";
+                }
+
+                return View(model);
+            }
+        }
+
+        public ViewResult Charities()
+        {
+            List<Charity> charities = _charCatRepo.Charities.ToList();
+
+            return View(charities);
         }
     }
 }
