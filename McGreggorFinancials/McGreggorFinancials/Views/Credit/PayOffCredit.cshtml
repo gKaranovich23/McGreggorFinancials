@@ -13,6 +13,7 @@
 <form asp-action="PayOffCredit">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="PaymentMethod.ID" />
+    <input type="hidden" asp-for="PaymentMethod.Method"/>
     <div class="form-group">
         <label asp-for="AmountToPay" class="control-label"></label>
         <input asp-for="AmountToPay" class="form-control"></i>

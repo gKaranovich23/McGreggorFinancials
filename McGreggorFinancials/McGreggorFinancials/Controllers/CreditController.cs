@@ -62,7 +62,7 @@ namespace McGreggorFinancials.Controllers
                 _creditRepo.Save(c);
                 _saveRepo.Save(s);
                 TempData["message"] = $"{p.Method} has had ${model.AmountToPay} paid off";
-                return RedirectToAction("PaymentMethods");
+                return RedirectToAction("CreditCards");
             }
             else
             {
