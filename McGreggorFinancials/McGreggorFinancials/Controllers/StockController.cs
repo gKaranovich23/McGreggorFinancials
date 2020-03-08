@@ -286,7 +286,7 @@ namespace McGreggorFinancials.Controllers
                 Date = date.Value,
                 PieChartData = data,
                 LineChartData = lineData,
-                AmountInvested = Convert.ToDecimal(shares.Select(e => e.NumOfShares * e.PurchasePrice).Sum()),
+                AmountInvested = (decimal)amountInvested,
                 StockGoal = targetInvestmentAmount * stockGoal.Percentage / 100,
                 GoldGoal = targetInvestmentAmount * goldGoal.Percentage / 100,
                 BondGoal = targetInvestmentAmount * bondGoal.Percentage / 100,
