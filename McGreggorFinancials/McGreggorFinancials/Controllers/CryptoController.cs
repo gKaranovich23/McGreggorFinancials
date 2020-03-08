@@ -270,7 +270,7 @@ namespace McGreggorFinancials.Controllers
                 Date = date.Value,
                 PieChartData = data,
                 LineChartData = lineData,
-                AmountInvested = Convert.ToDecimal(shares.Select(e => (double)e.NumOfCoins * e.PurchasePrice).Sum()),
+                AmountInvested = Convert.ToDecimal(amountInvested),
                 CryptoGoal = targetInvestmentAmount * cryptoGoal.Percentage / 100,
                 CryptoPercentage = cryptoGoal.Percentage
             });
