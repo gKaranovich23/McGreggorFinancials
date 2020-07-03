@@ -557,10 +557,12 @@ namespace McGreggorFinancials.Controllers
         {
             if (ModelState.IsValid)
             {
+                Boolean shouldAddToSession = model.Stock.ID == 0;
+
                 _stockRepo.Save(model.Stock);
                 TempData["message"] = $"{model.Stock.Company} has been saved";
 
-                if(model.Stock.ID == 0)
+                if(shouldAddToSession)
                 {
                     IAvapiConnection connection = AvapiConnection.Instance;
                     connection.Connect("BXGO930UI9P053HT");
