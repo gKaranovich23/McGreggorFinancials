@@ -463,8 +463,8 @@ namespace McGreggorFinancials.Controllers
             if (ModelState.IsValid)
             {
                 CreditBalance c = p.CreditBalance;
-                c.Amount -= model.AmountToPay;
-                s.Amount -= model.AmountToPay;
+                c.Amount = Math.Round(c.Amount - model.AmountToPay, 2);
+                s.Amount -= Math.Round(s.Amount - model.AmountToPay, 2);
                 _creditRepo.Save(c);
                 _accountRepo.Save(s);
                 TempData["message"] = $"{p.Method} has had ${model.AmountToPay} paid off";
