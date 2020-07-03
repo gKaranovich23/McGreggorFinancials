@@ -24,7 +24,7 @@ namespace McGreggorFinancials.ViewComponents
 
             List<Account> savings = _repo.Accounts.Where(x => x.Type.Name.Equals("Personal")).ToList();
 
-            return View(savings.Select(x => x.Amount).Sum());
+            return View(Math.Round(savings.Select(x => x.Amount).Sum(), 2));
         }
     }
 }

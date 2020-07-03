@@ -31,7 +31,7 @@ namespace McGreggorFinancials.ViewComponents
 
             return View(new ExpenseVsBudgetViewModel
             {
-                ExpenseTotal = Convert.ToDecimal(expenses.Select(e => e.Amount).Sum()),
+                ExpenseTotal = Math.Round(Convert.ToDecimal(expenses.Select(e => e.Amount).Sum()), 2),
                 BudgetGoal = _goalRepo.TargetAmounts.Where(g => g.TargetType.Name.Equals("Expenses")).FirstOrDefault()
             });
         }

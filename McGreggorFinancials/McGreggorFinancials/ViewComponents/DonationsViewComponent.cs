@@ -42,7 +42,7 @@ namespace McGreggorFinancials.ViewComponents
 
             return View(new DonationsVsGoalViewModel
             {
-                DonationsTotal = Convert.ToDecimal(donations.Select(e => e.Amount).Sum()),
+                DonationsTotal = Math.Round(Convert.ToDecimal(donations.Select(e => e.Amount).Sum()), 2),
                 DonationsGoal = targetDonationsAmount
             });
         }

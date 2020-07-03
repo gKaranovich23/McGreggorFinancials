@@ -92,6 +92,8 @@ namespace McGreggorFinancials.ViewComponents
 
             }
 
+            netWorth = Math.Round(netWorth);
+
             return View(netWorth);
         }
     }
