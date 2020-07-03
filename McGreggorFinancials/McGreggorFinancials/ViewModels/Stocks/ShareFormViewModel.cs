@@ -13,5 +13,8 @@ namespace McGreggorFinancials.ViewModels.Stocks
         public SelectList Stocks { get; set; }
         public DateTime CurrDateLoc { get; set; }
         public string ReturnUrl { get; set; }
+
+        public int StockID { get; set; }
+        public String StockCompany { get; set; }
     }
 }

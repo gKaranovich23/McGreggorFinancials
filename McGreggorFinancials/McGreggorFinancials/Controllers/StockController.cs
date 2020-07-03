@@ -113,15 +113,13 @@ namespace McGreggorFinancials.Controllers
 
         public ViewResult Sell(int stockId)
         {
-            Share s = _repo.Shares.Where(x => x.StockID == stockId).FirstOrDefault();
-            s.NumOfShares = 0;
-
             return View("Sell", new ShareFormViewModel
             {
-                Share = s,
+                Share = new Share() { StockID = stockId },
                 Stocks = new SelectList(_stockRepo.Stocks.ToList(), "ID", "Company"),
+                StockCompany = _stockRepo.Stocks.Where(x => x.ID == stockId).FirstOrDefault().Company,
                 ReturnUrl = Request.Headers["Referer"].ToString()
-            });
+            }); ;
         }
 
         [HttpPost]
