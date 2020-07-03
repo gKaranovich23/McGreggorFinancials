@@ -90,6 +90,8 @@ namespace McGreggorFinancials.Controllers
                     account.Amount = (double)account.Amount - (model.Share.PurchasePrice * model.Share.NumOfShares);
                 }
 
+                account.Amount = Math.Round(account.Amount, 2);
+
                 _repo.Save(model.Share);
                 _saveRepo.Save(account);
                 TempData["message"] = $"Share #{model.Share.ID} has been saved";
@@ -130,6 +132,7 @@ namespace McGreggorFinancials.Controllers
             {
                 Account account = _saveRepo.Accounts.Where(x => x.TypeID == _saveTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
                 account.Amount = (double)account.Amount + (model.Share.PurchasePrice * model.Share.NumOfShares);
+                account.Amount = Math.Round(account.Amount, 2);
 
                 model.Share.NumOfShares = -model.Share.NumOfShares;
                 _repo.Save(model.Share);

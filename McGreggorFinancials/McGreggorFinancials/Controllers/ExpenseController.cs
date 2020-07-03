@@ -76,11 +76,11 @@ namespace McGreggorFinancials.Controllers
                 {
                     if (_payRepo.PaymentMethods.Where(x => x.ID == model.Expense.PaymentMethodID).FirstOrDefault().IsCredit)
                     {
-                        c.Amount += model.Expense.Amount;
+                        c.Amount = Math.Round(c.Amount + model.Expense.Amount, 2);
                     }
                     else
                     {
-                        s.Amount -= model.Expense.Amount;
+                        s.Amount = Math.Round(s.Amount - model.Expense.Amount, 2);
                     }
                 }
                 else
@@ -89,11 +89,11 @@ namespace McGreggorFinancials.Controllers
 
                     if (_payRepo.PaymentMethods.Where(x => x.ID == model.Expense.PaymentMethodID).FirstOrDefault().IsCredit)
                     {
-                        c.Amount += model.Expense.Amount - i.Amount;
+                        c.Amount = Math.Round(c.Amount + model.Expense.Amount - i.Amount, 2);
                     }
                     else
                     {
-                        s.Amount = s.Amount + i.Amount - model.Expense.Amount;
+                        s.Amount = Math.Round(s.Amount + i.Amount - model.Expense.Amount, 2);
                     }
                 }
 
@@ -292,7 +292,7 @@ namespace McGreggorFinancials.Controllers
         {
             Account s = _saveRepo.Accounts.Where(x => x.TypeID == _saveTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
             Expense deletedExpense = _repo.Delete(expenseId);
-            s.Amount = s.Amount + deletedExpense.Amount;
+            s.Amount = Math.Round(s.Amount + deletedExpense.Amount, 2);
             _saveRepo.Save(s);
             if (deletedExpense != null)
             {

@@ -61,12 +61,12 @@ namespace McGreggorFinancials.Controllers
                 Account s = _accountRepo.Accounts.Where(x => x.TypeID == _accountTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
                 if (model.Income.ID == 0)
                 {
-                    s.Amount = s.Amount + model.Income.Amount;
+                    s.Amount = Math.Round(s.Amount + model.Income.Amount, 2);
                 }
                 else
                 {
                     IncomeEntry i = _repo.IncomeEntries.Where(x => x.ID == model.Income.ID).FirstOrDefault();
-                    s.Amount = s.Amount - i.Amount + model.Income.Amount;
+                    s.Amount = Math.Round(s.Amount - i.Amount + model.Income.Amount, 2);
                 }
 
                 _repo.Save(model.Income);
@@ -254,7 +254,7 @@ namespace McGreggorFinancials.Controllers
         {
             Account s = _accountRepo.Accounts.Where(x => x.TypeID == _accountTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
             IncomeEntry deletedIncome = _repo.Delete(incomeId);
-            s.Amount = s.Amount - deletedIncome.Amount;
+            s.Amount = Math.Round(s.Amount - deletedIncome.Amount, 2);
             _accountRepo.Save(s);
             if (deletedIncome != null)
             {

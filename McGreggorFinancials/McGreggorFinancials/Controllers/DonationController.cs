@@ -84,11 +84,11 @@ namespace McGreggorFinancials.Controllers
                 {
                     if (_payRepo.PaymentMethods.Where(x => x.ID == model.Donation.PaymentMethodID).FirstOrDefault().IsCredit)
                     {
-                        c.Amount += model.Donation.Amount;
+                        c.Amount = Math.Round(c.Amount + model.Donation.Amount, 2);
                     }
                     else
                     {
-                        s.Amount -= model.Donation.Amount;
+                        s.Amount = Math.Round(s.Amount - model.Donation.Amount,2);
                     }
                 }
                 else
@@ -97,11 +97,11 @@ namespace McGreggorFinancials.Controllers
 
                     if (_payRepo.PaymentMethods.Where(x => x.ID == model.Donation.PaymentMethodID).FirstOrDefault().IsCredit)
                     {
-                        c.Amount += model.Donation.Amount - i.Amount;
+                        c.Amount = Math.Round(c.Amount + model.Donation.Amount - i.Amount, 2);
                     }
                     else
                     {
-                        s.Amount = s.Amount + i.Amount - model.Donation.Amount;
+                        s.Amount = Math.Round(s.Amount + i.Amount - model.Donation.Amount, 2);
                     }
                 }
 
@@ -304,7 +304,7 @@ namespace McGreggorFinancials.Controllers
         {
             Account s = _saveRepo.Accounts.Where(x => x.TypeID == _saveTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
             Donation deletedDonation = _repo.Delete(donationId);
-            s.Amount = s.Amount + deletedDonation.Amount;
+            s.Amount = Math.Round(s.Amount + deletedDonation.Amount, 2);
             _saveRepo.Save(s);
             if (deletedDonation != null)
             {

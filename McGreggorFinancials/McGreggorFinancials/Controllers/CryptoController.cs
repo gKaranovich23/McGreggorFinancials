@@ -88,6 +88,8 @@ namespace McGreggorFinancials.Controllers
                     account.Amount = (double)account.Amount - (model.Coin.PurchasePrice * (double)model.Coin.NumOfCoins);
                 }
 
+                account.Amount = Math.Round(account.Amount, 2);
+
                 _repo.Save(model.Coin);
                 _saveRepo.Save(account);
                 TempData["message"] = $"Coin #{model.Coin.ID} has been saved";
@@ -130,6 +132,8 @@ namespace McGreggorFinancials.Controllers
             {
                 Account account = _saveRepo.Accounts.Where(x => x.TypeID == _saveTypeRepo.AccountTypes.Where(y => y.Name.Equals("Personal")).FirstOrDefault().ID).FirstOrDefault();
                 account.Amount = (double)account.Amount + (model.Coin.PurchasePrice * (double)model.Coin.NumOfCoins);
+
+                account.Amount = Math.Round(account.Amount, 2);
 
                 model.Coin.NumOfCoins = -model.Coin.NumOfCoins;
                 _repo.Save(model.Coin);
@@ -256,6 +260,8 @@ namespace McGreggorFinancials.Controllers
             {
                 amountInvested += (double)s.PurchasePrice * (double)s.NumOfCoins;
             }
+
+            amountInvested = Math.Round(amountInvested, 2);
 
             List<IncomeEntry> incomes = _incomeRepo.IncomeEntries.Where(i => i.Date.Month == date.Value.Month && i.Date.Year == date.Value.Year).ToList();
 
