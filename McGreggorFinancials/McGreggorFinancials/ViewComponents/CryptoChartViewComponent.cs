@@ -73,10 +73,11 @@ namespace McGreggorFinancials.ViewComponents
                         if (sData != null && sData != DateTime.MinValue)
                         {
                             List<Coin> lineDataShares = coins.Where(e => e.CryptoCurrencyID == crypto.ID).ToList();
-                            lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
-                            lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
-                            lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                            decimal totalShares = lineDataShares.Select(e => e.NumOfCoins).Sum();
+                            List<Coin> previousMonthsDataShares = lineDataShares.Where(e => e.Date.Year < currentDate.Year  || 
+                                e.Date.Year == currentDate.Year && e.Date.Month < currentDate.Month).ToList();
+                            List<Coin> currentMonthsDataShares = lineDataShares.Where(e => e.Date.Year == currentDate.Year && e.Date.Month == currentDate.Month
+                                && e.Date.Day <= currentDate.Day).ToList();
+                            decimal totalShares = previousMonthsDataShares.Select(e => e.NumOfCoins).Sum() + currentMonthsDataShares.Select(e => e.NumOfCoins).Sum();
                             double s = Convert.ToDouble(cryptoData.GetValueOrDefault(sData));
                             double stockValue = s * (double)totalShares;
                             total += stockValue;
