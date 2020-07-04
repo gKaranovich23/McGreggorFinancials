@@ -78,10 +78,11 @@ namespace McGreggorFinancials.ViewComponents
                         if (sData != null && sData != DateTime.MinValue)
                         {
                             List<Share> lineDataShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                            lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
-                            lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
-                            lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                            int totalShares = lineDataShares.Select(e => e.NumOfShares).Sum();
+                            List<Share> previousMonthsDataShares = lineDataShares.Where(e => e.Date.Year < currentDate.Year ||
+                                e.Date.Year == currentDate.Year && e.Date.Month < currentDate.Month).ToList();
+                            List<Share> currentMonthsDataShares = lineDataShares.Where(e => e.Date.Year == currentDate.Year && e.Date.Month == currentDate.Month
+                                && e.Date.Day <= currentDate.Day).ToList();
+                            decimal totalShares = previousMonthsDataShares.Select(e => e.NumOfShares).Sum() + currentMonthsDataShares.Select(e => e.NumOfShares).Sum();
                             double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
                             double stockValue = s * (double)totalShares;
                             total += stockValue;

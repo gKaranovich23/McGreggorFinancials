@@ -231,10 +231,11 @@ namespace McGreggorFinancials.Controllers
                     if (sData != null && sData != DateTime.MinValue)
                     {
                         List<Share> lineDataShares = shares.Where(e => e.StockID == stock.ID).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Year <= currentDate.Year).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Month <= currentDate.Month).ToList();
-                        lineDataShares = lineDataShares.Where(e => e.Date.Day <= currentDate.Day).ToList();
-                        int totalShares = lineDataShares.Select(e => e.NumOfShares).Sum();
+                        List<Share> previousMonthsDataShares = lineDataShares.Where(e => e.Date.Year < currentDate.Year ||
+                            e.Date.Year == currentDate.Year && e.Date.Month < currentDate.Month).ToList();
+                        List<Share> currentMonthsDataShares = lineDataShares.Where(e => e.Date.Year == currentDate.Year && e.Date.Month == currentDate.Month
+                            && e.Date.Day <= currentDate.Day).ToList();
+                        decimal totalShares = previousMonthsDataShares.Select(e => e.NumOfShares).Sum() + currentMonthsDataShares.Select(e => e.NumOfShares).Sum();
                         double s = Convert.ToDouble(stockData.GetValueOrDefault(sData));
                         double stockValue = s * (double)totalShares;
                         total += stockValue;
@@ -357,11 +358,9 @@ namespace McGreggorFinancials.Controllers
             List<LineChartData> lineData = new List<LineChartData>();
 
             int month = 1;
-            int year = DateTime.Now.Year;
-            int currentMonth = DateTime.Now.Month;
             double currentValue = 0;
 
-            while (month <= currentMonth)
+            while (month <= date.Value.Month)
             {
                 double total = 0;
                 foreach (var stock in stocks)
@@ -369,10 +368,10 @@ namespace McGreggorFinancials.Controllers
                     IAvapiResponse_TIME_SERIES_MONTHLY time_series_monthlyResponse = stockData.GetValueOrDefault(stock.ID);
 
                     var sData = time_series_monthlyResponse.Data.TimeSeries.Where(x => Convert.ToDateTime(x.DateTime).Month == month
-                        && Convert.ToDateTime(x.DateTime).Year == year).FirstOrDefault();
+                        && Convert.ToDateTime(x.DateTime).Year == date.Value.Year).FirstOrDefault();
                     if (sData != null)
                     {
-                        List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID && e.Date.Month <= month).ToList();
+                        List<Share> listOfShares = shares.Where(e => e.StockID == stock.ID && (e.Date.Year < date.Value.Year || (e.Date.Year == date.Value.Year && e.Date.Month <= month))).ToList();
                         int totalShares = listOfShares.Select(e => e.NumOfShares).Sum();
                         total += Convert.ToDouble(sData.close) * (double)totalShares;
                     }
